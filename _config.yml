@@ -6,7 +6,7 @@
 # --- Required options --- #
 
 # Name of website
-title: Jacob A. Torres | A Portfolio of Data Science
+title: Jacob A. Torres
 
 # Your name to show in the footer
 author: Jacob A. Torres
@@ -14,12 +14,16 @@ author: Jacob A. Torres
 # --- List of links in the navigation bar --- #
 
 navbar-links:
+  author's home: "https://jacobtorres.net/"
   About Me: "aboutme"
+  Contact:
+    - Email: jacob@jacobtorres.net
+    - Phone: (720) 770-1881
+    - Github: https://github.com/jacob-torres/
+    - Twitter: https://www.twitter.com/jacobtorres29/
   Resources:
     - Beautiful Jekyll: "https://beautifuljekyll.com"
-    - Learn markdown: "https://www.markdowntutorial.com/"
-  Author's home: "https://jacobtorres.net/"
-
+    
 # --- Logo --- #
 
 # Image to show in the navigation bar - works best with a square image
@@ -40,13 +44,13 @@ title-img: /path/to/image
 # Uncomment the links you want to show and add your information to each one.
 social-network-links:
   email: "jacob@jacobtorres.net"
-  facebook: 
+  #facebook: 
   github: jacob-torres
   twitter: jacobtorres29
 #  reddit: yourname
 #  linkedin: 
 #  xing: yourname
-#  stackoverflow: "3943160/daattali"
+  stackoverflow: "7994562/jacob-torres"
 #  snapchat: deanat78
 #  instagram: deanat78
 #  youtube: user/deanat78
