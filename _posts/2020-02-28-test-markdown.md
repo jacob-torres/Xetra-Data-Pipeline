@@ -1,10 +1,10 @@
 ---
 layout: post
-title: Sample blog post
-subtitle: Each post also has a subtitle
+title: Housing the Homeless
+subtitle: An Analysis of How Permanent Supportive Housing Reduces Homelessness
 gh-repo: daattali/beautiful-jekyll
 gh-badge: [star, fork, follow]
-tags: [test]
+tags: [data-science, data-analysis, homelessness, housing, poverty, hud]
 comments: true
 ---
 
