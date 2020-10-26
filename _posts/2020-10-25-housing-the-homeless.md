@@ -16,7 +16,7 @@ Find the data I used in this analysis [here,](https://www.hudexchange.info/resou
 and find the Google Colab notebook [here!](https://colab.research.google.com/drive/1gaTCKCk37ElCcl9m-uFt_rvt_InQ1TXt?usp=sharing)
 
 
-# Housing the Homeless
+# Housing the Homeless:
 ## An Analysis of Investment in Permanent Supportive Housing (PSH) and Change in Homelessness
 
 Homelessness is an unfortunate and difficult problem facing not just the United States, but the entire world. Everywhere on this planet where there are humans, there are humans without homes. It's estimated that there were  567,715 homeless people living in the United States in January 2019. Since 2007, homelessness has been trending upward.[1]
