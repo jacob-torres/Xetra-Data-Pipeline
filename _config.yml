@@ -14,7 +14,7 @@ author: Jacob A. Torres
 # --- List of links in the navigation bar --- #
 
 navbar-links:
-  author's home: "https://jacobtorres.net/"
+  Home: "https://jacobtorres.net/"
   About Me: "aboutme"
   Contact:
     - Email: jacob@jacobtorres.net
