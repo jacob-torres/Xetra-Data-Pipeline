@@ -23,7 +23,7 @@ Homelessness is an unfortunate and difficult problem facing not just the United 
 
 The [HUD Exchange](https://www.hudexchange.info/about/#:~:text=The%20HUD%20Exchange%20is%20an,and%20partners%20of%20these%20organizations) is an online platform for the free and open exchange of data on affordable  housing and homelessness. Organizations involved in housing local homeless people, as well as collecting this data, are funded by the department of housing and urban development (HUD.)
 
-Below are the latest data on the HUD Exchange on homelessness in the United States. This includes the average point-in-time count (PIT) and housing inventory count (HIC) from 2007 to 2019. Each dataset is in excel format.
+The data used in the analysis are the latest data on the HUD Exchange on homelessness in the United States. This includes the average point-in-time count (PIT) and housing inventory count (HIC) from 2007 to 2019. Each dataset is in excel format.
 
 ## Research Question
 
