@@ -46,6 +46,16 @@ I created a coolwarm map of the United States showing the states with a decrease
 
 ![Coolwarm map of the US](/assets/img/coolwarm_map.png)
 
+The map distinguishes between the states which showed a decrease in homelessness over the given period, vs those that showed an increase. Based on the data, the states with a decrease in homeless claimed the highest number of PSH beds.
 
+In addition, the scatter plot below shows a slight downward trend in homelessness where states participated in the HMIS, which as mentioned above suggests a more standardized approach to homeless sheltering.
+
+![Scatter plot](/assets/img/scatterplot.png)
+
+The p-value in the t-test I performed also confirmed the alternative hypothesis made above, as it fell below the significance level of 0.05.
+
+# Conclusions
+
+Based on the analysis above, I believe that it's reasonable to reject the null (ho,) which states that state investment in PSH shelter for the homelessness does _not_ have a significant effect on the change in homelessness in that state. Clearly there is a positive relationship between investment in PSH shelter and decrease in homelessness between 2007 and 2019, meaning that more state investment in this type of semi-permanent shelter would be advisible if our goal is decreasing homelessness.
 
 [1]: https://endhomelessness.org/homelessness-in-america/homelessness-statistics/state-of-homelessness-2020/
