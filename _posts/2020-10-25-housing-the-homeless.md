@@ -14,7 +14,6 @@ I just completed an analysis of the most recent available data on homelessness i
 Find the data I used in this analysis [here,](https://www.hudexchange.info/resource/3031/pit-and-hic-data-since-2007/), and find the Google Colab notebook [here!](https://colab.research.google.com/drive/1gaTCKCk37ElCcl9m-uFt_rvt_InQ1TXt?usp=sharing)
 
 
-# Housing the Homeless:
 ## An Analysis of Investment in Permanent Supportive Housing (PSH) and Change in Homelessness
 
 Homelessness is an unfortunate and difficult problem facing not just the United States, but the entire world. Everywhere on this planet where there are humans, there are humans without homes. It's estimated that there were  567,715 homeless people living in the United States in January 2019. From 2018 to 2019, homelessness has been trending upward.[1] But as my analysis shows, there's still reason for hope.
@@ -27,7 +26,7 @@ The data used in the analysis are the latest data on the HUD Exchange on homeles
 
 Does a state's investment in permanent supportive housing (PSH) for the homeless significantly decrease the number of homeless people in that state?
 
-In this analysis, an independent t-test is performed to determine how significant the change in homelessness is based on a state's investment in permanent supportive housing. A result is _significant_ if the p-value falls beneath the significant level of 0.05.
+In this analysis, an independent t-test is performed to determine how significant the change in homelessness is based on a state's investment in permanent supportive housing. A result is _significant_ if the p-value falls beneath the significance level of 0.05.
 
 The amount of investment in a certain type of housing project (e.g. permanent housing or emergency shelter) is measured by the number of recorded beds in each category, particularly those that are year-round. In addition, a housing organization's participation in the [Homeless Management Information System](https://www.hudexchange.info/programs/hmis/) (HMIS) may suggest a more standardized approach to targeting homelessness in the area.
 
