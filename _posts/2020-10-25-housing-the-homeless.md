@@ -44,13 +44,13 @@ My initial analysis of the PIT and housing inventory counts revealed a general d
 
 I created a coolwarm map of the United States showing the states with a decrease in homelessness, vs those with an increase:
 
-![Coolwarm map of the US](/assets/img/coolwarm_map.png)
+![Coolwarm map of the US](/assets/img/updatedgraph.png)
 
 The map distinguishes between the states which showed a decrease in homelessness over the given period, vs those that showed an increase. Based on the data, the states with a decrease in homeless claimed the highest number of PSH beds.
 
 In addition, the scatter plot below shows a slight downward trend in homelessness where states participated in the HMIS, which as mentioned above suggests a more standardized approach to homeless sheltering.
 
-![Scatter plot](/assets/img/scatterplot.png)
+![Scatter plot](/assets/img/updatedplot.png)
 
 The p-value in the t-test I performed also confirmed the alternative hypothesis made above, as it fell below the significance level of 0.05.
 
