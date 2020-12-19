@@ -9,4 +9,4 @@ tags: [data-science, data-analysis, travel, airbnb, housing, housing-price, mach
 comments: true
 ---
 
-<iframe src='https://github.com/jacob-torres/predictive-modeling-airbnb-prices/main/blob/airbnb_ds_u2.html'></iframe>
+<iframe src='https://github.com/jacob-torres/Predictive-Modeling-Airbnb-Prices/blob/main/airbnb_ds_u2.ipynb'></iframe>
