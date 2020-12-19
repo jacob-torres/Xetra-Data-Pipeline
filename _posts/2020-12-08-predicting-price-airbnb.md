@@ -65,23 +65,21 @@ Out[2]:
 |75%|3.772624e+07|1.497179e+08|40.724038|-76.919322|201.000000|7.000000e+00|39.000000|2.06000|6.000000|311.000000|
 |max|4.556085e+07|3.679176e+08|47.734620|-70.995950|24999.000000|1.000000e+08|966.000000|44.0600|593.000000|365.000000|
 
---- 
-
-## Data Wrangling
-
 The table above shows that the data has at least one outlier noticeable at a glance: the maximum value of "minimum_nights" is 100 trillion. Clearly this is either a mistake or a joke. Regardless, I'll remove the listing with the outlier from this dataset to lessen the skew.
 
-In [3]:
+In [3]:
 
 ```python
 df.drop(df['minimum_nights'].argmax(), inplace=True)
 ```
 
----
+--- 
 
-Next, I wrote a function to wrangle (manipulate) the dataset into a clean, pre-processed feature matrix and a target vector. I used many tools from SKLearn and other packages for data processing.
+## Data Wrangling
 
-In short: I wrote a lot of code to turn this beautiful table into some ugly arrays of numbers that the computer can understand. I'll be using this transformed data to fit and train my model.
+I wrote a function to wrangle the dataset into a clean, pre-processed feature matrix and target vector. I used tools from SKLearn and other packages for data processing.
+
+In short: I wrote a lot of code to turn this beautiful table into some ugly arrays of numbers that the computer can understand. I'll be using this transformed data to fit and train my models.
 
 ---
 
@@ -101,4 +99,16 @@ I want to test this model using two accuracy scoring methods:
 
 Let's fit and test a linear regression model:
  
- 
+>R2 score = 0.018418019112983196
+
+>MSE = -319978.4329940487
+
+---
+
+These are god-awful scores!
+
+The R2 score is a value between 0 and 1. An R2 score of 0.018 means that the model was about 2% accurate.
+
+The MSE is represented here as a negative number. In reality, the MSE is the squared distance between the predicted values and the data, and thus must be a non-negative number. The negative value indicates that the variance in the predicted and actual data should be minimized. An MSE of around 322 thousand means that the squared variance in predicted and actual data sums up to this number, which represents quite a large gap between what the model "thought" the price was and the actual price of the listings.
+
+---
