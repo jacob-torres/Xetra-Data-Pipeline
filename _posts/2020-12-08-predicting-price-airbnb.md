@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 21st Century Traveling
+title: Traveling in the 21st Century
 subtitle: Predicting the Price of an Airbnb with Math and Python
 author: Jacob A. Torres
 gh-repo: jacob-torres/predictive-modeling-airbnb-prices/blob/main/airbnb_ds_u2.ipynb
@@ -9,11 +9,11 @@ tags: [data-science, data-analysis, travel, airbnb, housing, housing-price, mach
 comments: true
 ---
 
-When traveling around the United States, an increasing number of people are looking to the popular service Airbnb as an alternative to more traditional options like hotels. There are several main reasons for this trend, including the flexibility of location, housing type, and affordability.
+When traveling around the United States, an increasing number of people are looking to the popular service [Airbnb](https://airbnb.com/) as an alternative to more traditional options like hotels. There are several main reasons for this trend, including the flexibility of location, housing type, and affordability.
 
 It's important for the modern traveler to understand what determines the price of an airbnb. A good question to ask might be "Does the minimum-night limit of a listing predict the cost?" Or maybe "What are the characteristics that affordable listings have in common?"
 
-The following dataset was found on Kaggle's database, and comprises nearly a quarter of a million Airbnb listings around the United States in 2020. The primary question I plan to ask of this dataset is: "What are the best predicters of the Price of an Airbnb in the U.S.?"
+The following dataset was found on [Kaggle's database,](https://kaggle.com/datasets/) and comprises nearly a quarter of a million Airbnb listings around the United States in 2020. The primary question I plan to ask of this dataset is: "What are the best predicters of the Price of an Airbnb in the U.S.?"
 
 Let's take a look at the data before determining a hypothesis or model.
  
@@ -24,8 +24,8 @@ Let's take a look at the data before determining a hypothesis or model.
 In[1]:
 
 ```python
+import pandas as pd
 df = pd.read_csv(data_url)
-
 print(f"Dataset: {df.shape}")
 df.head()
 ```
@@ -69,40 +69,19 @@ Out[2]:
 
 ## Data Wrangling
 
-The table above shows that the data has at least one outlier noticeable at a glance: the maximum value of "minimum_nights" is 100 trillion. Clearly this is either a mistake or a joke. Regardless, I can remove the listing with the outlier from this dataset to lessen the skew.
+The table above shows that the data has at least one outlier noticeable at a glance: the maximum value of "minimum_nights" is 100 trillion. Clearly this is either a mistake or a joke. Regardless, I'll remove the listing with the outlier from this dataset to lessen the skew.
 
 In [3]:
 
 ```python
 df.drop(df['minimum_nights'].argmax(), inplace=True)
-print(f"Dataset: {df.shape}")
 ```
-
-Out [3]:
-
-Dataset: (226029, 17)
 
 ---
 
 Next, I wrote a function to wrangle (manipulate) the dataset into a clean, pre-processed feature matrix and a target vector. I used many tools from SKLearn and other packages for data processing.
 
-In short: I wrote a lot of code to turn this beautiful table into some ugly arrays of numbers that the computer can understand.
-
-In [4]:
-
-```python
-X_train, X_test, y_train, y_test = wrangle(df)
-
-print(f"""
-Training set: {len(X_train) / len(df) *100}%
-Testing set: {len(X_test) / len(df) *100}%
-""")
-```
-
-Out [4]:
-
-Training set: 79.99991151577895%
-Testing set: 20.000088484221052%
+In short: I wrote a lot of code to turn this beautiful table into some ugly arrays of numbers that the computer can understand. I'll be using this transformed data to fit and train my model.
 
 ---
 
@@ -110,7 +89,7 @@ Testing set: 20.000088484221052%
 
 ### Linear Regression
 
-My goal is to build a predictive model using Python which most accurately predicts the price of an airbnb. This is a regression problem, meaning the variable I'm targeting (price) could be an infinite number of values. First, I'll fitt a standard linear regression model from Scikit-Learn.
+My goal is to build a predictive model using Python which most accurately predicts the price of an airbnb. This is a regression problem, meaning the variable I'm targeting (price) could be an infinite number of values. First, I'll fitt a standard [linear regression model from Scikit-Learn.](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html)
 
 A linear regression model uses all the algebraic mind gymnastics we learned in high school, like slope and y-intercept, to fit a line to the input data (features of the airbnb listings.) It then applies the equation of that line to predict the price of future listings.
 
@@ -121,4 +100,5 @@ I want to test this model using two accuracy scoring methods:
 - Mean-squared error (MSE): Measures the square of the average difference between the predicted and actual values.
 
 Let's fit and test a linear regression model:
+ 
  
