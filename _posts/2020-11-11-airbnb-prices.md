@@ -109,6 +109,8 @@ These are god-awful scores!
 
 The R2 score is a value between 0 and 1. An R2 score of 0.018 means that the model was about 2% accurate.
 
-The MSE is represented here as a negative number. In reality, the MSE is the squared distance between the predicted values and the data, and thus must be a non-negative number. The negative value indicates that the variance in the predicted and actual data should be minimized. An MSE of around 322 thousand means that the squared variance in predicted and actual data sums up to this number, which represents quite a large gap between what the model "thought" the price was and the actual price of the listings.
+The MSE is represented here as a negative number. In reality, the MSE is the squared distance between the predicted values and the data, and thus must be a non-negative number. The negative value means that the variance in the predicted and actual data should be minimized.
+
+This MSE indicates that the squared variance in predicted and actual data sums up to about 320 thousand, which represents quite a large gap between what the model "thought" the price was and the actual price of the listings.
 
 ---
