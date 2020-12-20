@@ -57,8 +57,6 @@ To get a sense of the overall trends in the data, or if there are outliers or ot
 
 The table above shows that the data has at least one outlier noticeable at a glance: the maximum value of "minimum_nights" is 100 trillion. Clearly this is either a mistake or a joke. Regardless, I removed the listing with the outlier from this dataset to decrease the skew.
 
-There are also a few features, such as 
-
 ## Data Wrangling
 
 I wrote a function to wrangle the dataset into a clean, pre-processed feature matrix and target vector. This is where SKLearn especially came in handy; in order to get this table into a format that the model will be able to digest, it needs to be transformed into scaled numeric values.
