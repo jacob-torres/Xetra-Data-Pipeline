@@ -30,18 +30,6 @@ I programmed this project using Python 3.8.5. Some of the key tools I used are:
 
 Let's take a look at the data before determining a hypothesis or model:
  
-In[1]:
-
-```python
-import pandas as pd
-df = pd.read_csv(data_url)
-print(f"Dataset: {df.shape}")
-df.head()
-```
-
-Out[1]:
-
-Dataset: (226030, 17)
  
 | |id|name|host_id|host_name|neighbourhood_group|neighbourhood|latitude|longitude|room_type|price|minimum_nights|number_of_reviews|last_review|reviews_per_month|calculated_host_listings_count|availability_365|city|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -51,17 +39,10 @@ Dataset: (226030, 17)
 |3|155305|Cottage! BonPaul + Sharky's Hostel|746673|BonPaul|NaN|28806|35.57864|-82.59578|Entire home/apt|90|1|267|22/09/20|2.39|5|0|Asheville|
 |4|160594|Historic Grove Park|769252|Elizabeth|NaN|28801|35.61442|-82.54127|Private room|125|30|58|19/10/15|0.52|1|0|Asheville|
 
----
+The dataset has 226,030 observations, and 17 features.
 
-To get a sense if there are outliers or other anomalies in the data, as well as basic and helpful stats like the mean, standard deviation, and quartiles, I use Pandas' dataframe "describe" function.
+To get a sense of the overall trends in the data, or if there are outliers or other anomalies, I use Pandas' dataframe "describe" function to get a table of basic stats:
 
-In [2]:
-
-```python
-df.describe()
-```
-
-Out[2]:
  
 | |id|host_id|latitude|longitude|price|minimum_nights|number_of_reviews|reviews_per_month|calculated_host_listings_count|availability_365|
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -74,21 +55,15 @@ Out[2]:
 |75%|3.772624e+07|1.497179e+08|40.724038|-76.919322|201.000000|7.000000e+00|39.000000|2.06000|6.000000|311.000000|
 |max|4.556085e+07|3.679176e+08|47.734620|-70.995950|24999.000000|1.000000e+08|966.000000|44.0600|593.000000|365.000000|
 
-The table above shows that the data has at least one outlier noticeable at a glance: the maximum value of "minimum_nights" is 100 trillion. Clearly this is either a mistake or a joke. Regardless, I'll remove the listing with the outlier from this dataset to lessen the skew.
+The table above shows that the data has at least one outlier noticeable at a glance: the maximum value of "minimum_nights" is 100 trillion. Clearly this is either a mistake or a joke. Regardless, I removed the listing with the outlier from this dataset to decrease the skew.
 
-In [3]:
-
-```python
-df.drop(df['minimum_nights'].argmax(), inplace=True)
-```
-
---- 
+There are also a few features, such as 
 
 ## Data Wrangling
 
-I wrote a function to wrangle the dataset into a clean, pre-processed feature matrix and target vector. I used tools from SKLearn and other packages for data processing.
+I wrote a function to wrangle the dataset into a clean, pre-processed feature matrix and target vector. This is where SKLearn especially came in handy; in order to get this table into a format that the model will be able to digest, it needs to be transformed into scaled numeric values.
 
-In short: I wrote a lot of code to turn this beautiful table into some ugly arrays of numbers that the computer can understand. I'll be using this transformed data to fit and train my models.
+In short: I wrote code to turn this beautiful table into some ugly arrays of numbers that the computer can understand. I'll be using this transformed data to fit and train my models.
 
 ---
 
@@ -106,22 +81,21 @@ I want to test this model using two accuracy scoring methods:
 
 - Mean-squared error (MSE): Measures the square of the average difference between the predicted and actual values.
 
-Let's fit and test a linear regression model:
+Here are the results when I fit and test a basic, un-tuned LinearRegression model:
+
  
 >R2 score = 0.018418019112983196
 
   MSE = -319978.4329940487
 
----
 
-These are god-awful scores!
+For context, these are god-awful scores!
 
-The R2 score is a value between 0 and 1, representing the percentage of variance that was accurately predicted by the model. An R2 score of 0.018 means that the model was about 2% accurate ... so not very.
+The R2 score is a value between 0 and 1, representing the percentage of variance that was accurately predicted by the model. An R2 score of 0.018 means that the model was about 1.8% accurate ... so not very.
 
-The MSE is represented here as a negative number. In reality, the MSE is the average squared distance between the predicted values and the data, and thus must be a non-negative number. The negative value means that the variance in the predicted and actual data should be minimized.
+Since I scored the model using a parameter, rather than through the MSE package from SKLearn, the MSE is represented here as a negative number. The MSE represents the average squared distance between the predicted and actual values, and thus must be a non-negative number.
 
-This MSE indicates that the squared variance in predicted and actual data sums up to about 320 thousand, which represents quite a large gap between what the model "thought" the price was and the actual price of the listings.
+The above MSE indicates that the squared variance in predicted and actual data sums up to about 320 thousand, which represents quite a large gap between what the model "thought" the price was and the actual price of the listings.
 
 In order to improve the accuracy of the model, I'm going to do some feature selection and hyperparameter tuning:
-
 
