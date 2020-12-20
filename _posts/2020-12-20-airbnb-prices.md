@@ -77,7 +77,7 @@ I want to test this model using two accuracy scoring methods:
 
 - R-squared score (R2): Measures the proportion of the predicted outcome whose variance was accurately replicated by the linear model.
 
-- Mean-squared error (MSE): Measures the square of the average difference between the predicted and actual values.
+- Mean-squared error (MSE): Measures the average of the squared differences between the predicted and actual values.
 
 Here are the results when I fit and test a basic, un-tuned LinearRegression model:
 
