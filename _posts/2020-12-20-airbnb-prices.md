@@ -84,7 +84,7 @@ Here are the results when I fit and test a basic, un-tuned LinearRegression mode
  
 >R2 score = 0.018418019112983196
 
-  MSE = -319978.4329940487
+>MSE = -319978.4329940487
 
 
 For context, these are god-awful scores!
