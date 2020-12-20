@@ -15,12 +15,21 @@ It's important for the modern traveler to understand what determines the price o
 
 The following dataset was found on [Kaggle's database,](https://kaggle.com/datasets/) and comprises nearly a quarter of a million Airbnb listings around the United States in 2020. The primary question I plan to ask of this dataset is: "What are the best predicters of the Price of an Airbnb in the U.S.?"
 
-Let's take a look at the data before determining a hypothesis or model.
- 
- ---
+### Tools
+
+I programmed this project using Python 3.8.5. Some of the key tools I used are:
+
+- Jupyter notebook, Pandas, Numpy, and MatPlotLib
+-  Category_encoders: OrdinalEncoder
+- SciKit-Learn: SimpleImputer, StandardScaler, LinearRegression
+- XGBoost: XGBRegressor
+
+---
 
 ## Exploratory Data Analysis
 
+Let's take a look at the data before determining a hypothesis or model:
+ 
 In[1]:
 
 ```python
@@ -34,7 +43,7 @@ Out[1]:
 
 Dataset: (226030, 17)
  
-| |id|name|host_id|host_name|neighbourhood_group|neighbourhood|latitude|longitude|room_type|price|minimum_nights|number_of_reviews|last_review|reviews_per_month|calculated_host_listings_count|availability_365|city
+| |id|name|host_id|host_name|neighbourhood_group|neighbourhood|latitude|longitude|room_type|price|minimum_nights|number_of_reviews|last_review|reviews_per_month|calculated_host_listings_count|availability_365|city|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |0|38585|Charming Victorian home - twin beds + breakfast|165529|Evelyne|NaN|28804|35.65146|-82.62792|Private room|60|1|138|16/02/20|1.14|1|0|Asheville|
 |1|80905|French Chic Loft|427027|Celeste|NaN|28801|35.59779|-82.55540|Entire home/apt|470|1|114|07/09/20|1.03|11|288|Asheville|
@@ -101,16 +110,18 @@ Let's fit and test a linear regression model:
  
 >R2 score = 0.018418019112983196
 
->MSE = -319978.4329940487
+  MSE = -319978.4329940487
 
 ---
 
 These are god-awful scores!
 
-The R2 score is a value between 0 and 1. An R2 score of 0.018 means that the model was about 2% accurate.
+The R2 score is a value between 0 and 1, representing the percentage of variance that was accurately predicted by the model. An R2 score of 0.018 means that the model was about 2% accurate ... so not very.
 
-The MSE is represented here as a negative number. In reality, the MSE is the squared distance between the predicted values and the data, and thus must be a non-negative number. The negative value means that the variance in the predicted and actual data should be minimized.
+The MSE is represented here as a negative number. In reality, the MSE is the average squared distance between the predicted values and the data, and thus must be a non-negative number. The negative value means that the variance in the predicted and actual data should be minimized.
 
 This MSE indicates that the squared variance in predicted and actual data sums up to about 320 thousand, which represents quite a large gap between what the model "thought" the price was and the actual price of the listings.
 
----
+In order to improve the accuracy of the model, I'm going to do some feature selection and hyperparameter tuning:
+
+
