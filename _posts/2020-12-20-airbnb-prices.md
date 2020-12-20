@@ -93,7 +93,7 @@ For context, these are god-awful scores!
 
 The R2 score is a value between 0 and 1, representing the percentage of variance that was accurately predicted by the model. An R2 score of 0.018 means that the model was about 1.8% accurate ... so not very.
 
-Since I scored the model using a parameter, rather than through the MSE package from SKLearn, the MSE is represented here as a negative number. The MSE represents the average squared distance between the predicted and actual values, and thus must be a non-negative number.
+Since I scored the model using a parameter of the validation function, rather than through the MSE package from SKLearn, the MSE is represented here as a negative number. This is a quirk of the scorer that is used. The MSE represents the average squared distance between the predicted and actual values, and thus must be a non-negative number.
 
 The above MSE indicates that the squared variance in predicted and actual data sums up to about 320 thousand, which represents quite a large gap between what the model "thought" the price was and the actual price of the listings.
 
