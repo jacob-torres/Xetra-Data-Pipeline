@@ -17,7 +17,7 @@ The following dataset was found on [Kaggle's database,](https://kaggle.com/datas
 
 ### Tools
 
-I programmed this project using Python 3.8.5. Some of the key tools I used are:
+I programmed this project in Python 3.8. Some of the key tools I used are:
 
 - Jupyter notebook, Pandas, Numpy, and MatPlotLib
 -  Category_encoders: OrdinalEncoder
@@ -67,7 +67,7 @@ In short: I wrote code to turn this beautiful table into some ugly arrays of num
 
 ## Initial Modeling
 
-### Linear Regression
+### Linear Model: SKLearn Linear Regression
 
 My goal is to build a predictive model using Python which most accurately predicts the price of an airbnb. This is a regression problem, meaning the variable I'm targeting (price) could be an infinite number of values. First, I'll fitt a standard [linear regression model from Scikit-Learn.](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html)
 
@@ -82,18 +82,22 @@ I want to test this model using two accuracy scoring methods:
 Here are the results when I fit and test a basic, un-tuned LinearRegression model:
 
  
->R2 score = 0.018418019112983196
+>R2 score = 0.05261821654425727
+>MSE = -92099.40925130853
 
->MSE = -319978.4329940487
 
+For context, these are horrific scores!
 
-For context, these are god-awful scores!
-
-The R2 score is a value between 0 and 1, representing the percentage of variance that was accurately predicted by the model. An R2 score of 0.018 means that the model was about 1.8% accurate ... so not very.
+The R2 score is a value between 0 and 1, representing the percentage of variance that was accurately predicted by the model. An R2 score of 0.05 means that the model was about 5% accurate ... so not very.
 
 Since I scored the model using a parameter of the validation function, rather than through the MSE package from SKLearn, the MSE is represented here as a negative number. This is a quirk of the scorer that is used. The MSE represents the average squared distance between the predicted and actual values, and thus must be a non-negative number.
 
-The above MSE indicates that the squared variance in predicted and actual data sums up to about 320 thousand, which represents quite a large gap between what the model "thought" the price was and the actual price of the listings.
+The above MSE indicates that the squared variance in predicted and actual data sums up to about 92 thousand, which represents quite a large gap between what the model "thought" the price was and the actual price of the listings.
 
-In order to improve the accuracy of the model, I'm going to do some feature selection and hyperparameter tuning:
+The linear regression is often called the "Hello World" of machine learning models, meaning it's the model that is the most basic and simple to explain to beginners. It doesn't have many parameters to tune, and it seems likely that the data would be better suited to a different algorithm.
 
+---
+
+### Tree-Based Model: XGBoost Regressor
+
+A tree-based model, as opposed to a linear model, uses a decision tree as its base strategy. The XGBoost regressor is an ensemble model which boosts the correct decisions of each previous estimator to optimize its final decision.
