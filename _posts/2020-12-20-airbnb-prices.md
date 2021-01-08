@@ -67,22 +67,22 @@ In short: I wrote code to turn this beautiful table into some ugly arrays of num
 
 ## Initial Modeling
 
-### Linear Model: SKLearn Linear Regression
+### Linear Model: Linear Regression
 
 My goal is to build a predictive model using Python which most accurately predicts the price of an airbnb. This is a regression problem, meaning the variable I'm targeting (price) could be an infinite number of values. First, I'll fitt a standard [linear regression model from Scikit-Learn.](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html)
 
 A linear regression model uses all the algebraic mind gymnastics we learned in high school, like slope and y-intercept, to fit a line to the input data (features of the airbnb listings.) It then applies the equation of that line to predict the price of future listings.
 
-I want to test this model using two accuracy scoring methods:
+I'll test this model using two accuracy scoring methods:
 
 - R-squared score (R2): Measures the proportion of the predicted outcome whose variance was accurately replicated by the linear model.
 
 - Mean-squared error (MSE): Measures the average of the squared differences between the predicted and actual values.
 
-Here are the results when I fit and test a basic, un-tuned LinearRegression model:
+Here are the results when I fit and test a basic LinearRegression model:
 
  
->R2 score = 0.05261821654425727
+>r2 score = 0.05261821654425727
 >MSE = -92099.40925130853
 
 
@@ -101,3 +101,18 @@ The linear regression is often called the "Hello World" of machine learning mode
 ### Tree-Based Model: XGBoost Regressor
 
 A tree-based model, as opposed to a linear model, uses a decision tree as its base strategy. The XGBoost regressor is an ensemble model which boosts the correct decisions of each previous estimator to optimize its final decision.
+
+When I fit the XGBoost regressor to the data, my accuracy increases slightly:
+
+>r2 score = 0.15548775785353622
+
+15% accuracy is certainly an improvement from 5%, but it's still not great.
+
+### Tree-based Regression: Random Forest
+
+Finally, I'll fit a standard random forest regressor from Sklearn. This model does not use boosting, but rather a regular decision tree ensemble method known as bagging (aggrigating.)
+
+When I fit this model to the data, my accuracy looks like this:
+
+>r2 score = 
+
