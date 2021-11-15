@@ -2,27 +2,33 @@
 layout: post
 title: Traveling in the 21st Century
 subtitle: Predicting the Price of an Airbnb with Math and Python
-author: Jacob A. Torres
+author: Jacob Torres
 gh-repo: jacob-torres/predictive-modeling-airbnb-prices/blob/main/airbnb_ds_u2.ipynb
 gh-badge: [follow]
 tags: [data-science, data-analysis, travel, airbnb, housing, housing-price, machine-learning, predictive-modeling]
 comments: true
 ---
 
-When traveling around the United States, an increasing number of people are looking to the popular service [Airbnb](https://airbnb.com/) as an alternative to more traditional options like hotels. There are several main reasons for this trend, including the flexibility of location, housing type, and affordability.
+When traveling around the United States, an increasing number of people are looking to the popular service [Airbnb](https://airbnb.com/) as an alternative to more traditional options like hotels. There are several main reasons for this trend, including the flexibility of location, housing type, and affordability. It's important for a person interested in listing their home for rent on Airbnb to understand what determines a fair price.
 
-It's important for the modern traveler to understand what determines the price of an airbnb. A good question to ask might be "Does the minimum-night limit of a listing predict the cost?" Or maybe "What are the characteristics that affordable listings have in common?"
-
-The following dataset was found on [Kaggle's database,](https://kaggle.com/datasets/) and comprises nearly a quarter of a million Airbnb listings around the United States in 2020. The primary question I plan to ask of this dataset is: "What are the best predicters of the Price of an Airbnb in the U.S.?"
+The following dataset was found on [Kaggle's database,](https://kaggle.com/datasets/) and comprises nearly a quarter of a million Airbnb listings around the United States in 2020.
 
 ### Tools
 
 I programmed this project in Python 3.8. Some of the key tools I used are:
 
-- Jupyter notebook, Pandas, Numpy, and MatPlotLib
--  Category_encoders: OrdinalEncoder
-- SciKit-Learn: SimpleImputer, StandardScaler, LinearRegression
-- XGBoost: XGBRegressor
+* Jupyter notebook, Pandas, Numpy, and MatPlotLib
+* Category_encoders:
+    - [One-Hot encoder](https://contrib.scikit-learn.org/category_encoders/onehot.html)
+    - [OrdinalEncoder](https://contrib.scikit-learn.org/category_encoders/ordinal.html)
+* SciKit-Learn:
+    - [SimpleImputer](https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html)
+    - [StandardScaler](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html)
+    - [LinearRegression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html)
+* XGBoost:
+    - [XGBoost Regressor](https://xgboost.readthedocs.io/en/latest/python/python_api.html)
+* Tensorflow:
+    - [Keras Sequential Model](https://keras.io/api/models/sequential/)
 
 ---
 
@@ -65,21 +71,20 @@ In short: I wrote code to turn this beautiful table into some ugly arrays of num
 
 ---
 
-## Initial Modeling
+## Data Modeling
 
 ### Linear Model: Linear Regression
 
-My goal is to build a predictive model using Python which most accurately predicts the price of an airbnb. This is a regression problem, meaning the variable I'm targeting (price) could be an infinite number of values. First, I'll fitt a standard [linear regression model from Scikit-Learn.](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html)
+Our goal is to build a predictive model using Python which most accurately predicts the price of an airbnb. This is a regression problem, meaning the variable we're targeting (price) could be an infinite number of values. First, we'll fitt a standard linear regression model from Scikit-Learn, without expecting a super accurate result.
 
 A linear regression model uses all the algebraic mind gymnastics we learned in high school, like slope and y-intercept, to fit a line to the input data (features of the airbnb listings.) It then applies the equation of that line to predict the price of future listings.
 
-I'll test this model using two accuracy scoring methods:
+We'll test this model using two accuracy scoring methods:
 
-- R-squared score (R2): Measures the proportion of the predicted outcome whose variance was accurately replicated by the linear model.
+* R-squared score (R2): Measures the proportion of the predicted outcome whose variance was accurately replicated by the linear model.
+* Mean-squared error (MSE): Measures the average of the squared differences between the predicted and actual values.
 
-- Mean-squared error (MSE): Measures the average of the squared differences between the predicted and actual values.
-
-Here are the results when I fit and test a basic LinearRegression model:
+Here are the results when we fit and test a basic LinearRegression model:
 
  
 >r2 score = 0.05261821654425727
@@ -90,7 +95,7 @@ For context, these are horrific scores!
 
 The R2 score is a value between 0 and 1, representing the percentage of variance that was accurately predicted by the model. An R2 score of 0.05 means that the model was about 5% accurate ... so not very.
 
-Since I scored the model using a parameter of the validation function, rather than through the MSE package from SKLearn, the MSE is represented here as a negative number. This is a quirk of the scorer that is used. The MSE represents the average squared distance between the predicted and actual values, and thus must be a non-negative number.
+Since we scored the model using a parameter of the validation function, rather than through the MSE package from SKLearn, the MSE is represented here as a negative number. This is a quirk of the scorer that is used. The MSE represents the average squared distance between the predicted and actual values, and thus must be a non-negative number.
 
 The above MSE indicates that the squared variance in predicted and actual data sums up to about 92 thousand, which represents quite a large gap between what the model "thought" the price was and the actual price of the listings.
 
@@ -102,17 +107,70 @@ The linear regression is often called the "Hello World" of machine learning mode
 
 A tree-based model, as opposed to a linear model, uses a decision tree as its base strategy. The XGBoost regressor is an ensemble model which boosts the correct decisions of each previous estimator to optimize its final decision.
 
-When I fit the XGBoost regressor to the data, my accuracy increases slightly:
+When we fit the XGBoost regressor to the data, our accuracy increases slightly:
+
 
 >r2 score = 0.15548775785353622
 
-15% accuracy is certainly an improvement from 5%, but it's still not great.
 
-### Tree-based Regression: Random Forest
+15% accuracy is certainly an improvement from 5%, but it's still not great. It's time to bring in the big guns.
 
-Finally, I'll fit a standard random forest regressor from Sklearn. This model does not use boosting, but rather a regular decision tree ensemble method known as bagging (aggrigating.)
+---
 
-When I fit this model to the data, my accuracy looks like this:
+### Neural Network: Keras Sequential Model
 
->r2 score = 
+In short, a neural network is a machine-learning model which has multiple "hidden" layers through which the data is transformed before the final output is computed. A hidden layer can perform any number of computations to improve the given metric. There are many neural network architectures, but perhaps the simplest (and the one we'll be using on this data) is the feed-forward model. In this model, data flows predictably from the input layer, through each successive layer until the output layer.
 
+Depending on the results of the computations in each neuron of a layer, the output may or may not contribute to the final output. This is the process of determining whether or not a neuron will "fire." The ["sigmoid" function](https://towardsdatascience.com/sigmoid-neuron-deep-neural-networks-a4cd35b629d7) is an example of a common activation function which determines whether or not a hidden layer passes its output data to the next layer of the network.
+
+That said, putting the Airbnb data through a Keras neural network is a last-ditch effort to get more accurate results from the model. All 226,030 entries and 17 features can be synthesized more vigorously than is possible with a traditional method.
+
+I'll be evaluating loss as the metric for this model. Loss is the penalty for incorrect predictions, expressed by the sum of all error. If the prediction is perfect, the loss will equal 0. The larger the loss, the less accurate the results are. For this test, I'll by using the mean absolute error (MAE) metric as the loss function.
+
+* Mean absolute error (MAE): The magnitude of difference between the expected result and the prediction. This metric indicates the amount of error in the prediction, and is equal to 0 if the actual result was the same as the prediction. Again, the larger this value, the less accurate the results.
+    - Note: The mean squared error metric (MSE,) used earlier in this post, is an exaggerated version of the MAE. By squaring the differences between the actual and predicted values, the MSE gives a more obvious picture of the inaccuracy of the results.
+
+For this test, we must set a baseline output against which to compare the prediction results. Using the MAE metric, we'll determine whether or not the model is performing well by comparing the predicted error with the final error computed by the model.
+
+Because our target variable is the price of an Airbnb rental, we'll find the average price in the dataset. The average (mean) price is only the predicted value though, or in other words, it is the value against which we want to compare all other price values. Therefore, the metric of mean absolute error is the mean of the predicted price value subtracted from each entry's price.
+
+Here are the results of that computation:
+
+
+>Mean Absolute Error for Baseline is 1368.8777720114826
+
+
+This value is the baseline MAE, and will be used after fitting the model to determine how accurate the results are.
+
+After constructing a standard feed-forward neural network with five hidden layers (not including the output layer,) it's time to fit the data to the model. The results come in the form of loss and mean absolute error values for each epoch. (And epoch being a single pass of the model over the data.)
+
+The four epochs which were run on the data have produced the following output:
+
+
+>Epoch 1/4
+> 80723/80723 [==============================] - 72s 885us/step - loss: 614.7093 - mean_absolute_error: 614.7093 - val_loss: 568.1913 - val_mean_absolute_error: 568.191
+>Epoch 2/4
+> 80723/80723 [==============================] - 70s 868us/step - loss: 570.3614 - mean_absolute_error: 570.3614 - val_loss: 573.1775 - val_mean_absolute_error: 573.177
+>Epoch 3/4
+> 80723/80723 [==============================] - 71s 882us/step - loss: 555.7084 - mean_absolute_error: 555.7084 - val_loss: 533.4962 - val_mean_absolute_error: 533.496 - ETA: 32s - loss: 562.5844 - mean_absolute_error: 562.58
+>Epoch 4/4
+> 80723/80723 [==============================] - 72s 889us/step - loss: 546.1714 - mean_absolute_error: 546.1714 - val_loss: 517.6982 - val_mean_absolute_error: 517.69
+
+
+This demonstrates a distinct improvement in the training of the model; the initial predicted error was much larger than the error of the final epoch:
+
+
+>The baseline Mean Absolute Error calculated initially was : 1368.8777720114826
+>The Model's Mean Absolute Error calculated initially is : 517.6982421875
+>The improvement demonstrated by model using Mean Absolute Error as metrics is : 62.0
+
+
+---
+
+## Conclusions
+
+The above modeling is meant to demonstrate a number of training and evaluation techniques on a real-world dataset. It is clear that all dimensions of the data can be used in a neural network to determine an accurate price for any given Airbnb listing, with reasonably low error.
+
+To experience first-hand what this model can do, check it out [here](https://ptptairbnb2.herokuapp.com/).
+
+Note: The webpage takes about a half a minute to load; it's a hefty model! Feel free to imagine you are renting out your place on Airbnb, and would like to find out the ideal price. Maybe you are. Enter in your details, and have fun!
