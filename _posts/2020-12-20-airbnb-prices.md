@@ -147,7 +147,7 @@ After constructing a standard feed-forward neural network with five hidden layer
 The four epochs which were run on the data have produced the following output:
 
 
-```
+>```
 Epoch 1/4: 80723/80723 [==============================] - 72s 885us/step - loss: 614.7093 - mean_absolute_error: 614.7093 - val_loss: 568.1913 - val_mean_absolute_error: 568.191
 
 Epoch 2/4: 80723/80723 [==============================] - 70s 868us/step - loss: 570.3614 - mean_absolute_error: 570.3614 - val_loss: 573.1775 - val_mean_absolute_error: 573.177
