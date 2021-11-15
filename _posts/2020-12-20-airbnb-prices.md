@@ -137,7 +137,7 @@ Because our target variable is the price of an Airbnb rental, we'll find the ave
 Here are the results of that computation:
 
 
->Mean Absolute Error for Baseline is 1368.8777720114826
+>Mean Absolute Error for Baseline = 1368.8777720114826
 
 
 This value is the baseline MAE, and will be used after fitting the model to determine how accurate the results are.
