@@ -87,8 +87,8 @@ We'll test this model using two accuracy scoring methods:
 Here are the results when we fit and test a basic LinearRegression model:
 
  
->r2 score = 0.05261821654425727
->MSE = -92099.40925130853
+>r2 score = 0.05261821654425727  
+MSE = -92099.40925130853
 
 
 For context, these are horrific scores!
@@ -148,17 +148,20 @@ The four epochs which were run on the data have produced the following output:
 
 
 >Epoch 1/4: 80723/80723 [==============================] - 72s 885us/step - loss: 614.7093 - mean_absolute_error: 614.7093 - val_loss: 568.1913 - val_mean_absolute_error: 568.191  
+
 Epoch 2/4: 80723/80723 [==============================] - 70s 868us/step - loss: 570.3614 - mean_absolute_error: 570.3614 - val_loss: 573.1775 - val_mean_absolute_error: 573.177  
+
 Epoch 3/4: 80723/80723 [==============================] - 71s 882us/step - loss: 555.7084 - mean_absolute_error: 555.7084 - val_loss: 533.4962 - val_mean_absolute_error: 533.496 - ETA: 32s - loss: 562.5844 - mean_absolute_error: 562.58  
+
 Epoch 4/4: 80723/80723 [==============================] - 72s 889us/step - loss: 546.1714 - mean_absolute_error: 546.1714 - val_loss: 517.6982 - val_mean_absolute_error: 517.69
 
 
 This demonstrates a distinct improvement in the training of the model; the initial predicted error was much larger than the error of the final epoch:
 
 
->The baseline Mean Absolute Error calculated initially was : 1368.8777720114826
->The Model's Mean Absolute Error calculated initially is : 517.6982421875
->The improvement demonstrated by model using Mean Absolute Error as metrics is : 62.0
+>The baseline Mean Absolute Error, calculated initially, was 1368.8777720114826.  
+The Model's Mean Absolute Error, calculated initially, is 517.6982421875.  
+The improvement demonstrated by the model using Mean Absolute Error as the metric is 62%.
 
 
 ---
