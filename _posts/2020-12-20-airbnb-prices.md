@@ -13,6 +13,8 @@ When traveling around the United States, an increasing number of people are look
 
 The following dataset was found on [Kaggle's database,](https://kaggle.com/datasets/) and comprises nearly a quarter of a million Airbnb listings around the United States in 2020.
 
+Thanks to [Parvi Singh](https://github.com/singparvi) for collaboration on modeling and deployment.
+
 ### Tools
 
 I programmed this project in Python 3.8. Some of the key tools I used are:
