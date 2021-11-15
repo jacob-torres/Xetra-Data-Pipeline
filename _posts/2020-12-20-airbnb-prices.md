@@ -123,9 +123,9 @@ In short, a neural network is a machine-learning model which has multiple "hidde
 
 Depending on the results of the computations in each neuron of a layer, the output may or may not contribute to the final output. This is the process of determining whether or not a neuron will "fire." The ["sigmoid" function](https://towardsdatascience.com/sigmoid-neuron-deep-neural-networks-a4cd35b629d7) is an example of a common activation function which determines whether or not a hidden layer passes its output data to the next layer of the network.
 
-That said, putting the Airbnb data through a Keras neural network is a last-ditch effort to get more accurate results from the model. All 226,030 entries and 17 features can be synthesized more vigorously than is possible with a traditional method.
+Putting the Airbnb data through a Keras neural network is a last-ditch effort to get more accurate results from the model. All 226,030 entries and 17 features can be synthesized more vigorously than is possible with a traditional method.
 
-I'll be evaluating loss as the metric for this model. Loss is the penalty for incorrect predictions, expressed by the sum of all error. If the prediction is perfect, the loss will equal 0. The larger the loss, the less accurate the results are. For this test, I'll by using the mean absolute error (MAE) metric as the loss function.
+We'll be evaluating loss as the metric for this model. Loss is the penalty for incorrect predictions, expressed by the sum of all error. If the prediction is perfect, the loss will equal 0. The larger the loss, the less accurate the results are. For this test, we'll be using the mean absolute error (MAE) metric as the loss function.
 
 * Mean absolute error (MAE): The magnitude of difference between the expected result and the prediction. This metric indicates the amount of error in the prediction, and is equal to 0 if the actual result was the same as the prediction. Again, the larger this value, the less accurate the results.
     - Note: The mean squared error metric (MSE,) used earlier in this post, is an exaggerated version of the MAE. By squaring the differences between the actual and predicted values, the MSE gives a more obvious picture of the inaccuracy of the results.
