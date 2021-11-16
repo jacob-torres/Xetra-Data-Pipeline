@@ -2,7 +2,7 @@
 layout: post
 title: Housing the Homeless
 subtitle: Does Investing in Permanent Housing for the Homeless Significantly Decrease Homelessness?
-author: Jacob A. Torres
+author: Jacob Torres
 gh-repo: jacob-torres/housing-the-homeless/blob/main/Jacob_Torres_DS_Build_Project_1.ipynb
 gh-badge: [star, fork, follow]
 tags: [data-science, data-analysis, homelessness, housing, poverty, hud]

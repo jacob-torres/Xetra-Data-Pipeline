@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Machines Learning Languages
+title: Teaching Machines Human Languages
 subtitle: Improving Travel and Inter-Linguistic Connections
 author: Jacob A. Torres
 gh-badge: [follow]
