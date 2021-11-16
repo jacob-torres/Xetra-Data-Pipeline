@@ -10,7 +10,7 @@ comments: true
 
 >Music is the universal language of mankind. --Henry Wadsworth Longfellow
 
-Music is a bridge across lingual and cultural barriers. Even when a song is in a language you don't understand, emotions are easily conveyed through the sounds of instruments and voices. If you don't believe me, take a listen to [this](https://www.youtube.com/watch?v=im6uPqkXvQA) and tell me you don't know what emotion the singer is speaking to.
+Music is a bridge across lingual and cultural barriers. Even when a song is in a language you don't understand, emotions are easily conveyed through the sounds of instruments and voices. If you don't believe me, take a listen to [this](https://www.youtube.com/watch?v=wiIQtwuiV54) and tell me you don't know what emotion the singer is speaking to.
 
 Growing up, I played the violin, the drums, and briefly, the saxophone. I've always had an ear for music. As I work, I listen to instrumental pieces: classical, low-fi hip hop, solo piano, ETC. When listening to songs with lyrics, I'm enchanted by clever rhymes and intriguing turns of phrase. I'm studying multiple languages, most namely Spanish, and I've grown tremendously by listening to songs in languages I'm learning.
 
