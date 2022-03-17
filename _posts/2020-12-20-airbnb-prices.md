@@ -3,7 +3,7 @@ layout: post
 title: Traveling in the 21st Century
 subtitle: Predicting the Price of an Airbnb with Math and Python
 author: Jacob Torres
-gh-repo: jacob-torres/predictive-modeling-airbnb-prices/blob/main/airbnb_ds_u2.ipynb
+gh-repo: jacob-torres/airbnb-optimal-price/blob/main/
 gh-badge: [follow]
 tags: [data-science, data-analysis, travel, airbnb, housing, housing-price, machine-learning, predictive-modeling]
 comments: true
@@ -17,16 +17,13 @@ Thanks to [Parvi Singh](https://github.com/singparvi) for collaboration on model
 
 ### Tools
 
-I programmed this project in Python 3.8. Some of the key tools I used are:
-
-* Jupyter notebook, Pandas, Numpy, and MatPlotLib
-* Category_encoders:
+* Pandas, Numpy, and MatPlotLib
+* SciKit-Learn:
+    - [LinearRegression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html)
     - [One-Hot encoder](https://contrib.scikit-learn.org/category_encoders/onehot.html)
     - [OrdinalEncoder](https://contrib.scikit-learn.org/category_encoders/ordinal.html)
-* SciKit-Learn:
     - [SimpleImputer](https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html)
     - [StandardScaler](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html)
-    - [LinearRegression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html)
 * XGBoost:
     - [XGBoost Regressor](https://xgboost.readthedocs.io/en/latest/python/python_api.html)
 * Tensorflow:

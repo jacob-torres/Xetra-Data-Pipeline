@@ -32,9 +32,6 @@ df.head()
     (586672, 20)
 
 
-
-
-
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
