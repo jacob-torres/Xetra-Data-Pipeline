@@ -9,15 +9,33 @@ tags: [data-science, data-analysis, machine-learning, spotify, music, recommenda
 comments: true
 ---
 
-Spotify is one of the most popular music streaming services in the world, and it is a wealth of song and artist data. For one of my most interesting projects yet, I was tasked with writing and training a machine learning model to suggest songs to a Spotify user based on their liked songs.
+[Spotify](https://spotify.com/) is one of the most popular music streaming services in the world. For one of my most interesting projects yet, I was tasked with writing and training a machine learning model to suggest songs to a Spotify user based on their liked songs.
 
-Using a dataset of over half a million songs, I build a nearest-neighbors model with [Scikit-learn](https://scikit-learn.org/stable/)
+Using a dataset of over half a million songs, I built a nearest-neighbors model with [Scikit-learn](https://scikit-learn.org/stable/)
  to generate 10 recommended songs from the dataset which most closely matched the attributes of the input songs. This model is an unsupervised classification problem, meaning the model has no "target variable" to learn from.
 
-## Sample Code
+### Tools
+
+* Python 3.8
+* Pandas
+* Numpy
+* Scikit-Learn:
+  - [StandardScaler](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html)
+  - [PCA](https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html)
+  - [NearestNeighbors](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.NearestNeighbors.html)
+
+---
+
+## Exploratory Data Analysis
+
+First, we'll look at the head of the dataframe:
 
  ```python
- # Display data
+# Load data
+DATA_PATH = '../data/raw/tracks.csv.zip'
+df = pd.read_csv(DATA_PATH)
+
+# Display data
 print(df.shape)
 df.head()
 ```
@@ -188,6 +206,29 @@ df.head()
 </div>
 
 
+## Data Cleaning and Preprocessing
+
+This structured data looks ideal for the most part. A few things stand out though, mostly the datatype of the "release_date" feature, which is a string.
+ To make this feature model-friendly, we'll cut the first 4 digits (the year) from the string and convert it into an integer.
+ For now the year should be adequate. In later versions we might parse these dates using the [Pandas datetime object](https://pandas.pydata.org/docs/reference/api/pandas.to_datetime.html),
+ possibly giving us more information.
+
+Now that all of the data is numeric, let's move on to preparing it for modeling.
+
+For a preprocessing pipeline, we can use a number of methods. In my first solution, I went with the StandardScaler and principle component analysis (PCA). We can do any number of components when using PCA, and I went with 5. Once these steps are taken, we can start modeling.
+
+---
+
+## Nearest Neighbors Model
+
+We'll go with the standard NearestNeighbors model, an unsupervised learner which can be instantiated with a few different algorithms and a specified number of results to compute.
+ This is not the same as the K-NearestNeighbors classifier, which is a supervised learner. The NearestNeighbors model can make predictions with unlabeled data input.
+ Since this dataset doesn't have a target (which in this case would be "liked" or "not liked,") it can only benefit from an unsupervised solution.
+
+ The model will calculate the similarity of the results by measuring the distance between the songs, represented by vectors in virtual space. This is what makes the PCA a good algorithm for analyzing the components of song data. It's a much more concise solution for synthesizing the data and extracting meaning from it.
+
+Below we'll instantiate the model and set it to find 10 recommendations based on a sample song. Then we'll print the results and use our intuition on the model's accuracy.
+
 
 ```python
 # NearestNeighbors model
@@ -215,9 +256,10 @@ distances, indices = neighbors.kneighbors(my_girl_track)
      68345                                   Parece Que Fue Ayer
      Name: name, dtype: object]
 
+---
 
 ## Conclusion
 
  While this model is still a work in progress, it demonstrates the power of the nearest-neighbors method in determining the most appropriate recommendations to make based on unlabeled data. My next questions are which metrics are best to test the accuracy of the model, and how might I design an [autoencoder neural network](https://www.tensorflow.org/tutorials/generative/autoencoder) to process unlabeled song data and perhaps output more accurate results.
 
-If you'd like to check out the jupyter notebook I used to build and test this model, [click here.](https://jacobtorres.net/2022-03-17-spotify-nearest-neighbors-model-notebook/)
+If you'd like to check out the entire jupyter notebook I used to build and test this model, [click here.](https://jacobtorres.net/2022-03-17-spotify-nearest-neighbors-model-notebook/)
