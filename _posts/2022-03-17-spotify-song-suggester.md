@@ -220,4 +220,4 @@ distances, indices = neighbors.kneighbors(my_girl_track)
 
  While this model is still a work in progress, it demonstrates the power of the nearest-neighbors method in determining the most appropriate recommendations to make based on unlabeled data. My next questions are which metrics are best to test the accuracy of the model, and how might I design an [autoencoder neural network](https://www.tensorflow.org/tutorials/generative/autoencoder) to process unlabeled song data and perhaps output more accurate results.
 
-If you'd like to check out the jupyter notebook I used to build and test this model, [click here.](./spotify_nearest_neighbors_model.html)
+If you'd like to check out the jupyter notebook I used to build and test this model, [click here.](./2022-03-17-spotify-nearest-neighbors-model-notebook.html)
