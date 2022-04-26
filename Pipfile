@@ -8,6 +8,7 @@ pandas = "*"
 awscli = "*"
 jupyter = "*"
 boto3 = "*"
+pyarrow = "*"
 
 [dev-packages]
 
