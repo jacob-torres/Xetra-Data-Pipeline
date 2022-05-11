@@ -10,6 +10,7 @@ jupyter = "*"
 boto3 = "*"
 pyarrow = "*"
 jupyter-core = "*"
+sphinx = "*"
 
 [dev-packages]
 
