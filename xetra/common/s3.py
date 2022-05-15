@@ -36,12 +36,104 @@ class S3BucketConnector():
 
 
     def list_files_by_prefix(self, prefix: str):
-        pass
+        """Generates a list of csv files for the given prefix.
+        
+        This method uses the given prefix to filter objects by date
+        and returns a list of csv objects from the S3 bucket.
+
+        parameters
+        ----------
+        bucket : s3 bucket object
+        The source S3 bucket to get the data
+
+        prefix : str
+        The date prefix of the desired objects
+
+        returns
+        -------
+        files : list
+        A list of files with the given prefix
+        """
+
+        files = [obj.key for obj in bucket.objects.filter(Prefix=prefix)]
+
+        return files
 
 
-    def read_csv_to_df(self):
-        pass
+    def read_csv_to_df(self, bucket: s3.Bucket,
+        key: str, decoding: str='utf-8', sep: str=','):
+        """Reads data from an S3 object to a Pandas dataframe.
+    
+        This method reads objects (of either .csv or .parquet format,)
+        and loads the data into a Pandas dataframe for transformation.
+
+        parameters
+        ----------
+        bucket : s3 bucket object
+        The source S3 bucket to read from
+
+        key : str
+        The key of the desired S3 object
+
+        decoding : str, default = 'utf-8'
+        The decoding format to which to convert the S3 objects
+
+        sep : str, default = ','
+        The separating character for parsing the S3 object
+
+        returns
+        -------
+        df : Dataframe
+        The data in a Pandas dataframe
+        """
+
+        csv_obj = bucket.Object(key=key).get().get('Body').read().decode(decoding)
+        data = StringIO(csv_obj)
+        df = pd.read_csv(data, delimiter=sep)
+
+        return df
 
 
-    def write_df_to_s3(self):
-        pass
+    def write_df_to_s3(self, bucket: s3.Bucket,
+        key: str, df: pd.DataFrame, format: str='csv'):
+        """Writes dataframe to a target S3 bucket.
+        
+        This method writes the transformed data report to the new S3 bucket.
+
+        parameters
+        ----------
+        bucket : s3 bucket object
+        The target S3 bucket to write the report to
+
+        key : str
+        The object key
+
+        df : Dataframe
+        The Pandas dataframe to convert into an S3 object
+
+        format : str, default = 'csv'
+        The format of the new S3 object
+
+        returns
+        -------
+        bool
+        True if the write was successful, False if not
+        """
+
+        out_buffer = BytesIO()
+
+        if format == 'csv':
+            df.to_csv(out_buffer, index=False)
+
+        elif format == 'parquet':
+            df.to_parquet(out_buffer, index=False)
+
+        else:
+            print(f"""Error: {format} is not a valid format.
+                It should be either 'csv' or 'parquet.'""")
+
+            return False
+
+        bucket.put_object(Body=out_buffer.getvalue(), Key=key)
+
+        return True
