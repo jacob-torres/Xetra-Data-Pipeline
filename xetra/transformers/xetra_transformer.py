@@ -1,6 +1,12 @@
 """Xetra ETL component"""
+from datetime import datetime, timedelta
 from typing import NamedTuple
+
+from pandas import DataFrame, concat
+
+from xetra.common.meta_process import MetaProcess
 from xetra.common.s3 import S3BucketConnector
+
 
 class XetraSourceConfig(NamedTuple):
     """Class for source configuration data.
@@ -57,9 +63,9 @@ class XetraTargetConfig(NamedTuple):
 
 
 class XetraETL():
-"""    Reads the Xetra data from the Deutsche Boerse S3 bucket,
-    makes transformations, and loads the new data into a target bucket.
-"""
+    """    Reads the Xetra data from the Deutsche Boerse S3 bucket,
+        makes transformations, and loads the new data into a target bucket.
+    """
 
     def __init__(self, src_bucket: S3BucketConnector,
             tgt_bucket: S3BucketConnector, meta_key: str,
@@ -93,8 +99,7 @@ class XetraETL():
         self.extract_date_list = None
         self.meta_update_list = None
 
-
-    def extract(self):
+    def extract(self, bucket: S3BucketConnector, date_list: list):
         """Extracts data from the Deutsche Boerse S3 bucket.
 
         This method is used to retrieve the CSV data in the
@@ -103,7 +108,7 @@ class XetraETL():
 
         parameters
         ----------
-        bucket : s3 bucket object
+        bucket : S3BucketConnector
         The source S3 bucket from which to extract data
 
         date_list : list
@@ -111,21 +116,21 @@ class XetraETL():
 
         returns
         -------
-        df : dataframe
+        df : DataFrame
         A Pandas dataframe of the extracted data
         """
 
         # Uses the list_files_in_prefix method to get all CSV files 
     # loaded to the bucket since the specified date.
-        files = [key for date in date_list for key in list_files_in_prefix(bucket, date)]
+        files = [key for date in date_list for key in bucket.list_files_in_prefix(bucket, date)]
 
         # Todo: Add an exception for empty file list
-        df = pd.concat([read_csv_to_df(bucket, obj) for obj in files], ignore_index=True)
+        df = concat([bucket.read_csv_to_df(bucket, obj) for obj in files], ignore_index=True)
 
         return df
 
 
-    def transform(self):
+    def transform(self, df: DataFrame, columns: list, arg_date: str):
         """Transforms the Xetra data into a form suitable for reporting.
         
         This method performs transformations on the extracted data,
@@ -135,7 +140,7 @@ class XetraETL():
 
         parameters
         ----------
-        df : dataframe
+        df : DataFrame
         A dataframe of extracted data to transform
 
         columns : list
@@ -146,7 +151,7 @@ class XetraETL():
 
         returns
         -------
-        df : dataframe
+        df : DataFrame
         a transformed dataframe for loading
         """
 
@@ -197,7 +202,9 @@ class XetraETL():
         return df
 
 
-    def load(self):
+    def load(self, bucket: S3BucketConnector,
+    df: DataFrame, tgt_key: str, tgt_format: str,
+        meta_key: str, extract_date_list: list):
         """Loads the data into a new S3 bucket for reporting.
         
         This method is used to load the newly transformed data
@@ -206,10 +213,10 @@ class XetraETL():
 
         parameters
         ----------
-        bucket : s3 bucket object
+        bucket : S3BucketConnector
         The target S3 bucket to which to load the report
 
-        df : dataframe
+        df : DataFrame
         A Pandas dataframe of transformed report data
 
         tgt_key : str
@@ -226,18 +233,27 @@ class XetraETL():
 
         returns
         -------
-        bool
+        bool : is_successful
         True if the write was successful, False if not
         """
 
-        key = f"{tgt_key}_{datetime.today().strftime('%Y%m%d_%H%M%S')}.{tgt_format}"
-        write_df_to_s3(bucket, key, df, format=tgt_format)
-        update_meta_file(bucket, meta_key, extract_date_list)
+        key_date_format = '%Y%m%d_%H%M%S'
+        key = tgt_key + datetime.today().strftime(key_date_format) + tgt_format
 
-        return True
+        if len(df) < 1:
+            print("Sorry, no data was extracted. Try another date.")
+            is_successful = False
+
+        MetaProcess.write_df_to_s3(bucket, key, df, format=tgt_format)
+        MetaProcess.update_meta_file(bucket, meta_key, extract_date_list)
+        is_successful = True
+
+        return is_successful
 
 
-    def report(self):
+    def report(self, src_bucket: S3BucketConnector,
+        tgt_bucket: S3BucketConnector, date_list: list, columns: list,
+        arg_date: str, tgt_key: str, tgt_format: str, meta_key: str):
         """Processes Xetra source data through ETL into a report.
         
         This method uses ETL to extract, transform,
@@ -245,10 +261,10 @@ class XetraETL():
 
         parameters
         ----------
-        src_bucket : s3 bucket object
+        src_bucket : S3BucketConnector
         The source S3 bucket from which to extract the data
 
-        tgt_bucket : s3 bucket object
+        tgt_bucket : S3BucketConnector
         The target S3 bucket to which to load the report
 
         date_list : list
@@ -271,13 +287,17 @@ class XetraETL():
 
         returns
         -------
-        bool
-        True if the process was successful
+        bool : is_successful
+        True if the load was successful, False if not
         """
 
-        df = extract(src_bucket, date_list)
-        df = transform(df, columns, arg_date)
+        df = self.extract(src_bucket, date_list)
+        df = self.transform(df, columns, arg_date)
         extract_date_list = [date for date in date_list if date >= arg_date]
-        load(tgt_bucket, df, tgt_key, tgt_format, meta_key, extract_date_list)
 
-        return True
+        # Check the load success
+        is_successful = self.load(
+            tgt_bucket, df, tgt_key, tgt_format, meta_key, extract_date_list
+        )
+
+        return is_successful
