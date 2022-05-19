@@ -1,5 +1,7 @@
 """Xetra ETL component"""
+
 from datetime import datetime, timedelta
+from logging import getLogger
 from typing import NamedTuple
 
 from pandas import DataFrame, concat
@@ -36,30 +38,30 @@ class XetraSourceConfig(NamedTuple):
 class XetraTargetConfig(NamedTuple):
     """Class for target configuration data.
 
-    tgt_col_isin: column name for isin in target
-    tgt_col_date: column name for date in target
-    tgt_col_op_price: column name for opening price in target
-    tgt_col_clos_price: column name for closing price in target
-    tgt_col_min_price: column name for minimum price in target
-    tgt_col_max_price: column name for maximum price in target
-    tgt_col_dail_trad_vol: column name for daily traded volume in target
-    tgt_col_ch_prev_clos: column name for change to previous day's closing price in target
-    tgt_key: basic key of target file
-    tgt_key_date_format: date format of target file key
-    tgt_format: file format of the target file
+    trg_col_isin: column name for isin in target
+    trg_col_date: column name for date in target
+    trg_col_op_price: column name for opening price in target
+    trg_col_clos_price: column name for closing price in target
+    trg_col_min_price: column name for minimum price in target
+    trg_col_max_price: column name for maximum price in target
+    trg_col_dail_trad_vol: column name for daily traded volume in target
+    trg_col_ch_prev_clos: column name for change to previous day's closing price in target
+    trg_key: basic key of target file
+    trg_key_date_format: date format of target file key
+    trg_format: file format of the target file
     """
 
-    tgt_col_isin: str
-    tgt_col_date: str
-    tgt_col_op_price: str
-    tgt_col_clos_price: str
-    tgt_col_min_price: str
-    tgt_col_max_price: str
-    tgt_col_dail_trad_vol: str
-    tgt_col_ch_prev_clos: str
-    tgt_key: str
-    tgt_key_date_format: str
-    tgt_format: str
+    trg_col_isin: str
+    trg_col_date: str
+    trg_col_op_price: str
+    trg_col_clos_price: str
+    trg_col_min_price: str
+    trg_col_max_price: str
+    trg_col_dail_trad_vol: str
+    trg_col_ch_prev_clos: str
+    trg_key: str
+    trg_key_date_format: str
+    trg_format: str
 
 
 class XetraETL():
@@ -68,16 +70,16 @@ class XetraETL():
     """
 
     def __init__(self, src_bucket: S3BucketConnector,
-            tgt_bucket: S3BucketConnector, meta_key: str,
-            src_args: XetraSourceConfig, tgt_args: XetraTargetConfig):
-        """Constructor for Xetra transformer.
+            trg_bucket: S3BucketConnector, meta_key: str,
+            src_args: XetraSourceConfig, trg_args: XetraTargetConfig):
+        """Constructor for Xetra ETL.
 
         parameters
         ----------
         src_bucket : S3BucketConnector
         Connection to the source S3 bucket
 
-        tgt_bucket : S3BucketConnector
+        trg_bucket : S3BucketConnector
         Connection to the target S3 bucket
 
         meta_key : str
@@ -86,125 +88,157 @@ class XetraETL():
         src_args : XetraSourceConfig
         NamedTuple class with source configuration data
 
-        tgt_args : XetraTargetConfig
+        trg_args : XetraTargetConfig
         NamedTuple class with target configuration data
         """
 
+        self._logger = getLogger(__name__)
         self.src_bucket = src_bucket
-        self.tgt_bucket = tgt_bucket
+        self.trg_bucket = trg_bucket
         self.meta_key = meta_key
         self.src_args = src_args
-        self.tgt_args = tgt_args
+        self.trg_args = trg_args
         self.extract_date = None
         self.extract_date_list = None
         self.meta_update_list = None
 
-    def extract(self, bucket: S3BucketConnector, date_list: list):
+    def extract(self):
         """Extracts data from the Deutsche Boerse S3 bucket.
 
         This method is used to retrieve the CSV data in the
-        S3 bucket which corresponds to the given dates, and stores it
-        into a Pandas Dataframe for transformation.
-
-        parameters
-        ----------
-        bucket : S3BucketConnector
-        The source S3 bucket from which to extract data
-
-        date_list : list
-        The list of dates from which to extract data
+        source S3 bucket which corresponds to the given dates,
+        and stores it into a Pandas Dataframe for transformation.
 
         returns
         -------
-        df : DataFrame
+        data_frame : DataFrame
         A Pandas dataframe of the extracted data
         """
 
-        # Uses the list_files_in_prefix method to get all CSV files 
-    # loaded to the bucket since the specified date.
-        files = [key for date in date_list for key in bucket.list_files_in_prefix(bucket, date)]
+        # Uses the list_files_in_prefix method to get all
+        # CSV files loaded to the bucket since the specified date
+        files = [key for date in self.extract_date_list
+            for key in self.src_bucket.list_files_in_prefix(bucket, date)]
 
-        # Todo: Add an exception for empty file list
-        df = concat([bucket.read_csv_to_df(bucket, obj) for obj in files], ignore_index=True)
+        # Check for empty file list
+        if not files:
+            data_frame = DataFrame()
 
-        return df
+        else:
+            data_frame = concat(
+                [self.src_bucket.read_csv_to_data_frame(file)
+                for file in files], ignore_index=True
+            )
+            self._logger.info('Finished extracting Xetra source files.')
 
+        return data_frame
 
-    def transform(self, df: DataFrame, columns: list, arg_date: str):
+    def transform(self, data_frame: DataFrame):
         """Transforms the Xetra data into a form suitable for reporting.
         
         This method performs transformations on the extracted data,
         and reshapes the dataframe to report on facts such as
-        opening price, closing price, min and max price,
-        percentage of change since last closing, ETC.
+        opening price, closing price, min and max price, daily trade volume,
+        and percentage of change since last closing.
 
         parameters
         ----------
-        df : DataFrame
+        data_frame : DataFrame
         A dataframe of extracted data to transform
-
-        columns : list
-        A list of column names to be included in the report
-
-        arg_date : str
-        A date (in YYYY-MM-DD format) to filter the data
 
         returns
         -------
-        df : DataFrame
+        data_frame : DataFrame
         a transformed dataframe for loading
         """
 
-        df = df.loc[:, columns]
-        df.dropna(inplace=True)
+        # Check for empty dataframe
+        if data_frame.empty:
+            self._logger.info("The dataframe is empty. No transformations to apply.")
+            return data_frame
+
+        self._logger.info('Transforming Xetra data for reporting.')
+
+        # Select specific columns and drop all null values
+        data_frame = data_frame.loc[:, self.src_args.src_columns]
+        data_frame.dropna(inplace=True)
 
         # The opening_price column is created by sorting the data by Time,
         # then grouping it by ISIN and Date, selecting StartPrice,
         # and finally transforming the column to contain only the first date
-        df['opening_price'] = df.sort_values(
-            by=['Time']).groupby(
-            ['ISIN', 'Date'])['StartPrice'].transform('first')
+        data_frame[self.trg_args.trg_col_op_price] = (
+            data_frame.sort_values(
+                by=[self.src_args.src_col_time]
+            ).groupby([
+                self.src_args.src_col_isin,
+                self.src_args.src_col_date
+            ])[self.src_args.src_col_start_price]
+            .transform('first')
+        )
 
         # The closing_price column is created by transforming the data
         # similarly to opening_price, but selecting for the last date instead
-        df['closing_price'] = df.sort_values(
-            by=['Time']).groupby(
-            ['ISIN', 'Date'])['StartPrice'].transform('last')
+        data_frame[self.trg_args.trg_col_clos_price] = (
+            data_frame.sort_values(
+            by=[self.src_args.src_col_time]
+            ).groupby([
+                self.src_args.src_col_isin,
+                self.src_args.src_col_date
+            ])[self.src_args.src_col_start_price]
+            .transform('last')
+        )
 
-        # The dataframe is grouped by ISIN and Date, then aggregated to create
-        # new columns to express opening, closing, min, max, and trade volume
-        df = df.groupby(['ISIN', 'Date'], as_index=False).agg(
-            opening_price_eur=('opening_price', 'min'),
-            closing_price_eur=('closing_price', 'min'),
-            minimum_price_eur=('MinPrice', 'min'),
-            maximum_price_eur=('MaxPrice', 'max'),
-            daily_traded_volume=('TradedVolume', 'sum'))
+        # Rename min_price, max_price, and traded_volume columns
+        data_frame.rename(columns={
+            self.src_args.src_col_min_price: self.trg_args.trg_col_min_price,
+            self.src_args.src_col_max_price: self.trg_args.trg_col_max_price,
+            self.src_args.src_col_traded_vol: self.trg_args.trg_col_dail_trad_vol
+        }, inplace=True)
+
+        # Data aggregation
+        data_frame = (
+            data_frame.groupby([
+                self.src_args.src_col_isin,
+                self.src_args.src_col_date
+            ], as_index=False)
+            .agg({
+                self.trg_args.trg_col_op_price: 'min',
+                self.trg_args.trg_col_clos_price: 'min',
+                self.trg_args.trg_col_min_price: 'min',
+                self.trg_args.trg_col_max_price: 'max',
+                self.trg_args.trg_col_dail_trad_vol: 'sum'
+        })
+        )
 
         # The prev_closing_price column is created
         # by sorting the data by Date, and then grouping it by ISIN
-        # and selecting for closing_price_eur of the previous date
-        df['prev_closing_price'] = df.sort_values(
-            by=['Date']).groupby(
-            ['ISIN'])['closing_price_eur'].shift(1)
+        # and selecting for closing price of the previous date
+        data_frame[self.trg_args.trg_col_ch_prev_clos] = (
+            data_frame.sort_values(by=[self.trg_args.trg_col_date])
+            .groupby([self.trg_args.trg_col_isin])
+            [self.trg_args.trg_col_op_price].shift(1)
+        )
 
-        # The change_prev_closing_percent column is created
-        # by subtracting the current and prev closing prices
-        # and dividing the result by the prev price times 100. This results in
-        # the percentage of change in the closing price since the last date
-        df['change_prev_closing_%'] = (
-            df['closing_price_eur'] - df['prev_closing_price']
-            ) / df['prev_closing_price'] * 100
+        # Calculate the percentage of change in the closing price since the last date
+        data_frame[self.trg_args.trg_col_ch_prev_clos] = (
+            (data_frame[self.trg_args.trg_col_clos_price] -
+                data_frame[self.trg_args.trg_col_ch_prev_clos]
+            ) / data_frame[self.trg_args.trg_col_ch_prev_clos] * 100
+        )
 
-        df.drop(columns=['prev_closing_price'], inplace=True)
-        df = df.round(decimals=2)
-        df = df[df.Date >= arg_date]
+        # Round all float values to 2 decimals
+        data_frame = data_frame.round(decimals=2)
 
-        return df
+        # Filter the dataframe by date
+        data_frame = data_frame[
+            data_frame[self.trg_args.trg_col_date] >= self.extract_date
+        ].reset_index(drop=True)
 
+        self._logger.info("Finished transforming the Xetra data.")
 
-    def load(self, bucket: S3BucketConnector,
-    df: DataFrame, tgt_key: str, tgt_format: str,
-        meta_key: str, extract_date_list: list):
+        return data_frame
+
+    def load(self, data_frame: DataFrame):
         """Loads the data into a new S3 bucket for reporting.
         
         This method is used to load the newly transformed data
@@ -213,91 +247,60 @@ class XetraETL():
 
         parameters
         ----------
-        bucket : S3BucketConnector
-        The target S3 bucket to which to load the report
-
-        df : DataFrame
-        A Pandas dataframe of transformed report data
-
-        tgt_key : str
-        The target key specified for the current report
-
-        tgt_format : str
-        The file format of the target report
-
-        meta_key : str
-        The key of the meta file
-
-        extract_date_list : list
-        A list of extraction dates to note in the meta file
+        data_frame : DataFrame
+        A Pandas dataframe of transformed data
 
         returns
         -------
-        bool : is_successful
+        is_successful : bool
         True if the write was successful, False if not
         """
 
-        key_date_format = '%Y%m%d_%H%M%S'
-        key = tgt_key + datetime.today().strftime(key_date_format) + tgt_format
+        target_key = (
+            self.trg_args.trg_key +
+            datetime.today().strftime(self.trg_args.trg_key_date_format) +
+            self.trg_args.trg_format
+        )
 
-        if len(df) < 1:
-            print("Sorry, no data was extracted. Try another date.")
-            is_successful = False
+        is_successful = self.trg_bucket.write_df_to_s3(
+            target_key, data_frame, format=self.trg_args.trg_format
+        )
 
-        MetaProcess.write_df_to_s3(bucket, key, df, format=tgt_format)
-        MetaProcess.update_meta_file(bucket, meta_key, extract_date_list)
-        is_successful = True
+        if is_successful:
+            self._logger.info("The Xetra report was successfully loaded.")
+
+        else:
+            self._logger.error("Sorry, something went wrong loading the report data.")
+
+        # Update the meta file
+        MetaProcess.update_meta_file(
+            self.trg_bucket, self.meta_key, self.meta_update_list
+        )
+
+        self._logger.info("Finished updating meta file.")
 
         return is_successful
 
-
-    def report(self, src_bucket: S3BucketConnector,
-        tgt_bucket: S3BucketConnector, date_list: list, columns: list,
-        arg_date: str, tgt_key: str, tgt_format: str, meta_key: str):
+    def report(self):
         """Processes Xetra source data through ETL into a report.
         
         This method uses ETL to extract, transform,
         and load the source data into a report.
 
-        parameters
-        ----------
-        src_bucket : S3BucketConnector
-        The source S3 bucket from which to extract the data
-
-        tgt_bucket : S3BucketConnector
-        The target S3 bucket to which to load the report
-
-        date_list : list
-        A list of dates from which to filter the data
-
-        columns : list
-        A list of column names to include in the report
-
-        arg_date : str
-        A date (in YYYY-MM-DD format) for which to extract data
-
-        tgt_key : str
-        The target key for the new report
-
-        tgt_format : str
-        The file format for the new report
-
-        meta_key : str
-        The key for the meta file
-
         returns
         -------
-        bool : is_successful
-        True if the load was successful, False if not
+        is_successful : bool
+        True if the job was successful, false if not
         """
 
-        df = self.extract(src_bucket, date_list)
-        df = self.transform(df, columns, arg_date)
-        extract_date_list = [date for date in date_list if date >= arg_date]
+        data_frame = self.extract()
+        data_frame = self.transform(data_frame)
+        is_successful = self.load(data_frame)
 
-        # Check the load success
-        is_successful = self.load(
-            tgt_bucket, df, tgt_key, tgt_format, meta_key, extract_date_list
-        )
+        if is_successful:
+            self._logger.info("Successfully created Xetra daily report.")
+
+        else:
+            self._logger.error("Failed to create Xetra daily report.")
 
         return is_successful
