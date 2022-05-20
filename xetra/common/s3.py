@@ -1,42 +1,60 @@
 """Classes and methods for accessing S3."""
+
 from io import StringIO, BytesIO
+from logging import getLogger
 from os import environ
 
 from boto3.session import Session
-from pandas import read_csv
+from pandas import DataFrame, read_csv
+
+from xetra.common.constants import S3FileTypes
 
 
 class S3BucketConnector():
     """Class for interacting with S3 buckets."""
 
-    def __init__(self, endpoint_url: str, bucket_name: str):
+    def __init__(self, bucket_name: str,
+        access_key: str = environ['AWS_ACCESS_KEY_ID'],
+        secret_key: str = environ['AWS_SECRET_ACCESS_KEY'],
+        endpoint_url: str = 'https://s3.amazonaws.com'):
         """Instantiates the S3BucketConnector object.
 
         This object uses AWS credentials, an endpoint URL,
-        and bucket information to access an S3 bucket.
-        Note: AWS credentials are retrieved from environment variables.
+        and bucket name to access an S3 bucket.
+        Note: AWS credentials default to environment variables.
 
         parameters
         ----------
-        endpoint_url : str
-        Endpoint url for S3 bucket
-
         bucket_name : str
-        S3 bucket name
+        The S3 bucket name
+
+        access_key : str
+        AWS access key credential (defaults to AWS_ACCESS_KEY_ID)
+
+        secret_key : str
+        AWS secret key credential (defaults to AWS_SECRET_ACCESS_KEY)
+
+        endpoint_url : str
+        Endpoint url for the S3 bucket (defaults to AWS S3 url)
         """
 
+        self._name = bucket_name
+        self.access_key = access_key
+        self.secret_key = secret_key
+        self.endpoint_url = endpoint_url
+
         self.session = Session(
-            aws_access_key_id=environ['AWS_ACCESS_KEY_ID'],
-            aws_secret_access_key=environ['AWS_SECRET_ACCESS_KEY'],
-            region=environ['AWS_DEFAULT_REGION']
+            aws_access_key_id=self.access_key,
+            aws_secret_access_key=self.secret_key
         )
 
         self._s3 = self.session.resource(
             service_name='s3',
-            endpoint_url=endpoint_url
+            endpoint_url=self.endpoint_url
         )
 
-        self._bucket = self._s3.Bucket(bucket_name)
+        self._bucket = self._s3.Bucket(self._name)
+        self._logger = getLogger(__name__)
 
     def list_files_by_prefix(self, prefix: str):
         """Generates a list of csv files for the given prefix.
@@ -47,7 +65,7 @@ class S3BucketConnector():
         parameters
         ----------
         prefix : str
-        The date prefix of the desired objects
+        The date prefix of the objects
 
         returns
         -------
@@ -55,82 +73,99 @@ class S3BucketConnector():
         A list of files with the given prefix
         """
 
-        files = [obj.key for obj in self._bucket.objects.filter(Prefix=prefix)]
+        files = [obj.key
+        for obj in self._bucket.objects.filter(Prefix=prefix)]
         return files
 
-    def read_csv_to_df(self, key: str, decoding: str='utf-8', sep: str=','):
+    def read_csv_to_df(self, key: str,
+    encoding: str = 'utf-8', sep: str = ','):
         """Reads data from an S3 object to a Pandas dataframe.
-    
-        This method reads CSV objects and loads the data
-        into a Pandas dataframe for transformation.
 
         parameters
         ----------
         key : str
         The key of the desired S3 object
 
-        decoding : str, default = 'utf-8'
-        The decoding format to which to convert the S3 objects
+        encoding : str
+        The encoding to decode the file (defaults to 'utf-8')
 
-        sep : str, default = ','
-        The separating character for parsing the S3 object
+        sep : str
+        The separating character for parsing the file (defaults to ',')
 
         returns
         -------
-        df : DataFrame
-        The data loaded into a Pandas dataframe
+        data_frame : DataFrame
+        A Pandas dataframe containing the desired data
         """
 
         # Get csv file object from the bucket
         csv_obj = (
             self._bucket.Object(key=key).get()
-            .get('Body').read().decode(decoding)
+            .get('Body').read().decode(encoding)
         )
 
         # Read the csv data to a dataframe
         data = StringIO(csv_obj)
-        df = read_csv(data, delimiter=sep)
-        return df
+        data_frame = read_csv(data, delimiter=sep)
+        return data_frame
 
-    def write_df_to_s3(self, key: str, df: DataFrame, format: str='csv'):
+    def write_df_to_s3(self, key: str,
+    data_frame: DataFrame, format: str='csv'):
         """Writes dataframe to a target S3 bucket.
-        
-        This method writes the transformed data report
-        to the target S3 bucket.
 
         parameters
         ----------
         key : str
         The object key
 
-        df : DataFrame
+        data_frame : DataFrame
         The Pandas dataframe to convert into an S3 object
 
-        format : str, default = 'csv'
-        The format of the new S3 object
+        format : str
+        The format of the new S3 object (defaults to 'csv')
+        Possible values : {'csv', 'parquet'}
 
         returns
         -------
-        bool : is_successful
-        True if the write was successful, False if not
+        bool : True if the write was successful, False if not
         """
 
-        out_buffer = BytesIO()
-        is_successful = False
+        if format == S3FileTypes.CSV.value:
+            out_buffer = StringIO()
+            data_frame.to_csv(out_buffer, index=False)
+            return self.__put_obj__(out_buffer, key)
 
-        if format == 'csv':
-            df.to_csv(out_buffer, index=False)
-
-        elif format == 'parquet':
-            df.to_parquet(out_buffer, index=False)
+        elif format == S3FileTypes.PARQUET.value:
+            out_buffer = BytesIO()
+            data_frame.to_parquet(out_buffer, index=False)
+            return self.__put_obj__(out_buffer, key)
 
         else:
             print(f"""Error: {format} is not a valid format.
                 It should be either 'csv' or 'parquet.'""")
 
-        new_obj = self._bucket.put_object(Body=out_buffer.getvalue(), Key=key)
+    def __put_obj__(self, out_buffer: StringIO or BytesIO, key: str):
+        """Helper method for uploading objects to the S3 bucket.
+        
+        parameters
+        ----------
+        out_buffer : StringIO or BytesIO
+        The output object for writing the file
 
-        if new_obj is not None:
-            is_successful = True
+        key : str
+        The S3 object key
 
-        return is_successful
+        returns
+        -------
+        bool : True if the upload was successful, False if not
+        """
+
+        new_obj = self._bucket.put_object(
+            Body=out_buffer.getvalue(), Key=key
+        )
+
+        if not new_obj:
+            return False
+
+        else:
+            return True
