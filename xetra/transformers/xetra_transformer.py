@@ -115,22 +115,26 @@ class XetraETL():
         A Pandas dataframe of the extracted data
         """
 
+
+        self._logger.info("Extracting the source files ...")
+
         # Uses the list_files_in_prefix method to get all
         # CSV files loaded to the bucket since the specified date
         files = [key for date in self.extract_date_list
-            for key in self.src_bucket.list_files_in_prefix(bucket, date)]
+            for key in self.src_bucket.list_files_in_prefix(date)]
 
         # Check for empty file list
         if not files:
             data_frame = DataFrame()
+            self._logger.info("No files were extracted.")
+            return data_frame
 
-        else:
-            data_frame = concat(
-                [self.src_bucket.read_csv_to_data_frame(file)
-                for file in files], ignore_index=True
-            )
-            self._logger.info('Finished extracting Xetra source files.')
+        data_frame = concat(
+            [self.src_bucket.read_csv_to_data_frame(file)
+            for file in files], ignore_index=True
+        )
 
+        self._logger.info("Finished extracting the source files.")
         return data_frame
 
     def transform(self, data_frame: DataFrame):
@@ -144,12 +148,12 @@ class XetraETL():
         parameters
         ----------
         data_frame : DataFrame
-        A dataframe of extracted data to transform
+        A Pandas dataframe containing the extracted data
 
         returns
         -------
         data_frame : DataFrame
-        a transformed dataframe for loading
+        a Pandas dataframe containing transformed report data
         """
 
         # Check for empty dataframe
@@ -157,7 +161,7 @@ class XetraETL():
             self._logger.info("The dataframe is empty. No transformations to apply.")
             return data_frame
 
-        self._logger.info('Transforming Xetra data for reporting.')
+        self._logger.info("Transforming the Xetra data ...")
 
         # Select specific columns and drop all null values
         data_frame = data_frame.loc[:, self.src_args.src_columns]
@@ -235,7 +239,6 @@ class XetraETL():
         ].reset_index(drop=True)
 
         self._logger.info("Finished transforming the Xetra data.")
-
         return data_frame
 
     def load(self, data_frame: DataFrame):
@@ -252,44 +255,47 @@ class XetraETL():
 
         returns
         -------
-        is_successful : bool
+        bool : is_successful
         True if the write was successful, False if not
         """
 
+        key_date = (
+            datetime.today()
+            .strftime(self.trg_args.trg_key_date_format)
+        )
+
+        # Formatted object key
         target_key = (
-            self.trg_args.trg_key +
-            datetime.today().strftime(self.trg_args.trg_key_date_format) +
-            self.trg_args.trg_format
+            f"{self.trg_args.trg_key}"
+            f"_{key_date}_"
+            f"{self.trg_args.trg_format}"
         )
 
         is_successful = self.trg_bucket.write_df_to_s3(
             target_key, data_frame, format=self.trg_args.trg_format
         )
 
-        if is_successful:
-            self._logger.info("The Xetra report was successfully loaded.")
-
-        else:
+        if not is_successful:
             self._logger.error("Sorry, something went wrong loading the report data.")
+            return is_successful
+
+        self._logger.info("Finished loading the Xetra report.")
 
         # Update the meta file
+        self._logger.info("Updating the meta file ...")
         MetaProcess.update_meta_file(
             self.trg_bucket, self.meta_key, self.meta_update_list
         )
 
         self._logger.info("Finished updating meta file.")
-
         return is_successful
 
     def report(self):
         """Processes Xetra source data through ETL into a report.
         
-        This method uses ETL to extract, transform,
-        and load the source data into a report.
-
         returns
         -------
-        is_successful : bool
+        bool : is_successful
         True if the job was successful, false if not
         """
 
@@ -297,10 +303,9 @@ class XetraETL():
         data_frame = self.transform(data_frame)
         is_successful = self.load(data_frame)
 
-        if is_successful:
-            self._logger.info("Successfully created Xetra daily report.")
-
-        else:
+        if not is_successful:
             self._logger.error("Failed to create Xetra daily report.")
+            return is_successful
 
+        self._logger.info("Successfully created the Xetra daily report!")
         return is_successful

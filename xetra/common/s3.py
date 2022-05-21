@@ -98,6 +98,9 @@ class S3BucketConnector():
         A Pandas dataframe containing the desired data
         """
 
+        self._logger.info("Reading %s/%s/%s ...",
+            self.endpoint_url, self._name, key)
+
         # Get csv file object from the bucket
         csv_obj = (
             self._bucket.Object(key=key).get()
@@ -107,6 +110,8 @@ class S3BucketConnector():
         # Read the csv data to a dataframe
         data = StringIO(csv_obj)
         data_frame = read_csv(data, delimiter=sep)
+
+        self._logger.info("Finished reading object %s.", key)
         return data_frame
 
     def write_df_to_s3(self, key: str,
@@ -130,6 +135,9 @@ class S3BucketConnector():
         bool : True if the write was successful, False if not
         """
 
+        self._logger.info("Preparing to write %s/%s/%s ...",
+            self.endpoint_url, self._name, key)
+
         if format == S3FileTypes.CSV.value:
             out_buffer = StringIO()
             data_frame.to_csv(out_buffer, index=False)
@@ -140,9 +148,10 @@ class S3BucketConnector():
             data_frame.to_parquet(out_buffer, index=False)
             return self.__put_obj__(out_buffer, key)
 
-        else:
-            print(f"""Error: {format} is not a valid format.
-                It should be either 'csv' or 'parquet.'""")
+        # If the format is neither csv nor parquet
+        self._logger.error(
+            "Error: %s is not a valid file type. No files will be written.", format
+        )
 
     def __put_obj__(self, out_buffer: StringIO or BytesIO, key: str):
         """Helper method for uploading objects to the S3 bucket.
@@ -165,7 +174,12 @@ class S3BucketConnector():
         )
 
         if not new_obj:
+            self._logger.error(
+                "Error: Something went wrong while writing %s/%s/%s.",
+                self.endpoint_url, self._name, key
+            )
             return False
 
-        else:
-            return True
+        self._logger.info("Finished writing %s/%s/%s.",
+            self.endpoint_url, self._name, key)
+        return True
