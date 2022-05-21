@@ -14,9 +14,9 @@ class S3BucketConnector():
     """Class for interacting with S3 buckets."""
 
     def __init__(self, bucket_name: str,
-        access_key: str = environ['AWS_ACCESS_KEY_ID'],
-        secret_key: str = environ['AWS_SECRET_ACCESS_KEY'],
-        endpoint_url: str = 'https://s3.amazonaws.com'):
+            access_key: str = environ['AWS_ACCESS_KEY_ID'],
+            secret_key: str = environ['AWS_SECRET_ACCESS_KEY'],
+            endpoint_url: str = 'https://s3.amazonaws.com'):
         """Instantiates the S3BucketConnector object.
 
         This object uses AWS credentials, an endpoint URL,
@@ -58,7 +58,7 @@ class S3BucketConnector():
 
     def list_files_by_prefix(self, prefix: str):
         """Generates a list of csv files for the given prefix.
-        
+
         This method uses the given prefix to filter objects by date
         and returns a list of csv objects from the S3 bucket.
 
@@ -74,11 +74,11 @@ class S3BucketConnector():
         """
 
         files = [obj.key
-        for obj in self._bucket.objects.filter(Prefix=prefix)]
+            for obj in self._bucket.objects.filter(Prefix=prefix)]
         return files
 
     def read_csv_to_df(self, key: str,
-    encoding: str = 'utf-8', sep: str = ','):
+            encoding: str = 'utf-8', sep: str = ','):
         """Reads data from an S3 object to a Pandas dataframe.
 
         parameters
@@ -115,7 +115,7 @@ class S3BucketConnector():
         return data_frame
 
     def write_df_to_s3(self, key: str,
-    data_frame: DataFrame, format: str='csv'):
+            data_frame: DataFrame, format: str = 'csv'):
         """Writes dataframe to a target S3 bucket.
 
         parameters
@@ -150,12 +150,13 @@ class S3BucketConnector():
 
         # If the format is neither csv nor parquet
         self._logger.error(
-            "Error: %s is not a valid file type. No files will be written.", format
+            "Error: %s is not a valid file type. No files will be written.",
+            format
         )
 
     def __put_obj__(self, out_buffer: StringIO or BytesIO, key: str):
         """Helper method for uploading objects to the S3 bucket.
-        
+
         parameters
         ----------
         out_buffer : StringIO or BytesIO

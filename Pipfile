@@ -10,7 +10,8 @@ jupyter = "*"
 boto3 = "*"
 pyarrow = "*"
 jupyter-core = "*"
-pyyaml = "*"
+PyYAML = "*"
+pycodestyle = "*"
 
 [dev-packages]
 

@@ -45,7 +45,7 @@ class XetraTargetConfig(NamedTuple):
     trg_col_min_price: column name for minimum price in target
     trg_col_max_price: column name for maximum price in target
     trg_col_dail_trad_vol: column name for daily traded volume in target
-    trg_col_ch_prev_clos: column name for change to previous day's closing price in target
+    trg_col_ch_prev_clos: column name for change in prev closing price
     trg_key: basic key of target file
     trg_key_date_format: date format of target file key
     trg_format: file format of the target file
@@ -115,13 +115,12 @@ class XetraETL():
         A Pandas dataframe of the extracted data
         """
 
-
         self._logger.info("Extracting the source files ...")
 
-        # Uses the list_files_in_prefix method to get all
+        # Uses the list_files_by_prefix method to get all
         # CSV files loaded to the bucket since the specified date
         files = [key for date in self.extract_date_list
-            for key in self.src_bucket.list_files_in_prefix(date)]
+            for key in self.src_bucket.list_files_by_prefix(date)]
 
         # Check for empty file list
         if not files:
@@ -243,10 +242,6 @@ class XetraETL():
 
     def load(self, data_frame: DataFrame):
         """Loads the data into a new S3 bucket for reporting.
-        
-        This method is used to load the newly transformed data
-        into a target S3 bucket as an Apache parquet object
-        as a daily report.
 
         parameters
         ----------
@@ -276,7 +271,9 @@ class XetraETL():
         )
 
         if not is_successful:
-            self._logger.error("Sorry, something went wrong loading the report data.")
+            self._logger.error(
+                "Error: Something went wrong loading the report data."
+            )
             return is_successful
 
         self._logger.info("Finished loading the Xetra report.")
@@ -292,7 +289,7 @@ class XetraETL():
 
     def report(self):
         """Processes Xetra source data through ETL into a report.
-        
+
         returns
         -------
         bool : is_successful

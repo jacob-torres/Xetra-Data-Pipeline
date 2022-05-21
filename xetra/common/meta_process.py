@@ -13,7 +13,7 @@ from xetra.common.s3 import S3BucketConnector
 
 class MetaProcess():
     """Class for working with the meta file.
-    
+
     The meta file is updated whenever a new ETL job is completed.
     It is a csv file containing two columns:
     source_date and datetime_of_processing.
@@ -25,9 +25,9 @@ class MetaProcess():
 
     @staticmethod
     def update_meta_file(bucket: S3BucketConnector,
-        extract_date_list: list, meta_key: str = 'meta.csv'):
+            extract_date_list: list, meta_key: str = 'meta.csv'):
         """Updates the meta file with the new dates from the latest report.
-        
+
         The meta file is updated with the date(s)
         associated with the extracted data, and the datetime(s)
         of the current ETL process.
@@ -82,7 +82,7 @@ class MetaProcess():
 
     @staticmethod
     def get_date_list(bucket: S3BucketConnector,
-        start_date: str, meta_key: str = 'meta.csv'):
+            start_date: str, meta_key: str = 'meta.csv'):
         """Returns a list of extraction dates based on the start date.
         The current date is used as the processing date.
 
@@ -130,7 +130,8 @@ class MetaProcess():
             # and convert them to pandas datetime objects
             src_dates = set(
                 to_datetime(df_meta['source_date']
-            ).dt.date)
+            ).dt.date
+        )
 
             # Finds list of dates not yet added to the meta file
             missing_dates = (
@@ -138,7 +139,7 @@ class MetaProcess():
             )
 
             if missing_dates:
-                # Set min_date to the day before first date not in the meta file
+                # Set min_date to the day before the minimum meta file date
                 min_date = (
                     min(
                         set(dates[1:]) - src_dates
