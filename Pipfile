@@ -12,6 +12,7 @@ pyarrow = "*"
 jupyter-core = "*"
 PyYAML = "*"
 pycodestyle = "*"
+moto = "*"
 
 [dev-packages]
 
