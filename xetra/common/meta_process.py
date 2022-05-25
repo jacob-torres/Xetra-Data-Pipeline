@@ -40,8 +40,8 @@ class MetaProcess():
         extract_date_list : list
         A list of dates associated with the extracted data
 
-        meta_key : str
-        The key of the meta file object (defaults to 'meta.csv')
+        meta_key : str, default 'meta.csv'
+        The key of the meta file object
 
         returns
         -------
@@ -94,8 +94,8 @@ class MetaProcess():
         start_date : str
         A date used as the starting date to extract
 
-        meta_key : str
-        The key for the meta file (defaults to 'meta.csv')
+        meta_key : str, default 'meta.csv'
+        The key for the meta file
 
         returns
         -------

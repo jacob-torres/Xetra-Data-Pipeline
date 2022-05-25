@@ -8,6 +8,7 @@ from boto3.session import Session
 from pandas import DataFrame, read_csv
 
 from xetra.common.constants import S3FileTypes
+from xetra.common.custom_exceptions import WrongFormatException
 
 
 class S3BucketConnector():
@@ -86,11 +87,11 @@ class S3BucketConnector():
         key : str
         The key of the desired S3 object
 
-        encoding : str
-        The encoding to decode the file (defaults to 'utf-8')
+        encoding : str, default 'utf-8'
+        The encoding which should be used to decode the file
 
-        sep : str
-        The separating character for parsing the file (defaults to ',')
+        sep : str, default ','
+        The separating character for parsing the file
 
         returns
         -------
@@ -135,17 +136,21 @@ class S3BucketConnector():
         bool : True if the write was successful, False if not
         """
 
+        if data_frame.empty:
+            self._logger.info("The data frame is empty! No files will be written.")
+            return False
+
         self._logger.info("Preparing to write %s/%s/%s ...",
             self.endpoint_url, self._name, key)
 
         if format == S3FileTypes.CSV.value:
-            out_buffer = StringIO()
-            data_frame.to_csv(out_buffer, index=False)
+            data = data_frame.to_csv(index=False)
+            out_buffer = StringIO(data)
             return self.__put_obj__(out_buffer, key)
 
-        elif format == S3FileTypes.PARQUET.value:
-            out_buffer = BytesIO()
-            data_frame.to_parquet(out_buffer, index=False)
+        if format == S3FileTypes.PARQUET.value:
+            data = data_frame.to_parquet(index=False)
+            out_buffer = BytesIO(data)
             return self.__put_obj__(out_buffer, key)
 
         # If the format is neither csv nor parquet
@@ -153,6 +158,7 @@ class S3BucketConnector():
             "Error: %s is not a valid file type. No files will be written.",
             format
         )
+        raise WrongFormatException
 
     def __put_obj__(self, out_buffer: StringIO or BytesIO, key: str):
         """Helper method for uploading objects to the S3 bucket.
