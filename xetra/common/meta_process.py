@@ -113,7 +113,6 @@ class MetaProcess():
             datetime.strptime(start_date, date_format).date()
             - timedelta(days=1)
         )
-
         today = datetime.today().date()
 
         try:
@@ -123,7 +122,7 @@ class MetaProcess():
             # The date list counts up from min_date to the current date
             dates = [
                 (min_date + timedelta(days=x))
-                for x in range(0, (today-min_date).days + 1)
+                for x in range(0, (today - min_date).days + 1)
             ]
 
             # Create set of unique dates in the meta file
@@ -157,12 +156,13 @@ class MetaProcess():
 
             else:
                 date_results = []
-                min_date_result = datetime(2500, 1, 1).date()
+                min_date_result = datetime(2500, 1, 1).strftime(date_format)
 
         except bucket.session.client('s3').exceptions.NoSuchKey:
             date_results = [
-                (start_date+ timedelta(days=x)).strftime(date_format)
-                for x in range(0, (today-min_date).days + 1)
+                (datetime.strptime(start_date, date_format).date() +
+                timedelta(days=x)).strftime(date_format)
+                for x in range(0, (today - min_date).days)
             ]
 
             min_date_result = start_date
