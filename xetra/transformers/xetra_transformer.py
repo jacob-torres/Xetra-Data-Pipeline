@@ -98,9 +98,9 @@ class XetraETL():
         self.meta_key = meta_key
         self.src_args = src_args
         self.trg_args = trg_args
-        self.extract_date = None
-        self.extract_date_list = None
-        self.meta_update_list = None
+        self.extract_date = ''
+        self.extract_date_list = []
+        self.meta_update_list = []
 
     def extract(self):
         """Extracts data from the Deutsche Boerse S3 bucket.
@@ -129,7 +129,7 @@ class XetraETL():
             return data_frame
 
         data_frame = concat(
-            [self.src_bucket.read_csv_to_data_frame(file)
+            [self.src_bucket.read_csv_to_df(file)
             for file in files], ignore_index=True
         )
 
@@ -191,8 +191,10 @@ class XetraETL():
             .transform('last')
         )
 
-        # Rename min_price, max_price, and traded_volume columns
+        # Rename date, min_price, max_price, and traded_volume columns
         data_frame.rename(columns={
+            self.src_args.src_col_isin: self.trg_args.trg_col_isin,
+            self.src_args.src_col_date: self.trg_args.trg_col_date,
             self.src_args.src_col_min_price: self.trg_args.trg_col_min_price,
             self.src_args.src_col_max_price: self.trg_args.trg_col_max_price,
             self.src_args.src_col_traded_vol: self.trg_args.trg_col_dail_trad_vol
@@ -201,8 +203,8 @@ class XetraETL():
         # Data aggregation
         data_frame = (
             data_frame.groupby([
-                self.src_args.src_col_isin,
-                self.src_args.src_col_date
+                self.trg_args.trg_col_isin,
+                self.trg_args.trg_col_date
             ], as_index=False)
             .agg({
                 self.trg_args.trg_col_op_price: 'min',
@@ -250,13 +252,11 @@ class XetraETL():
 
         returns
         -------
-        bool : is_successful
-        True if the write was successful, False if not
+        bool : True if the write was successful, False if not
         """
 
         key_date = (
-            datetime.today()
-            .strftime(self.trg_args.trg_key_date_format)
+            datetime.today().strftime(self.trg_args.trg_key_date_format)
         )
 
         # Formatted object key
@@ -266,26 +266,25 @@ class XetraETL():
             f"{self.trg_args.trg_format}"
         )
 
-        is_successful = self.trg_bucket.write_df_to_s3(
+        new_object = self.trg_bucket.write_df_to_s3(
             target_key, data_frame, format=self.trg_args.trg_format
         )
 
-        if not is_successful:
+        if new_object is None:
             self._logger.error(
                 "Error: Something went wrong loading the report data."
             )
-            return is_successful
+            return False
 
         self._logger.info("Finished loading the Xetra report.")
 
         # Update the meta file
-        self._logger.info("Updating the meta file ...")
         MetaProcess.update_meta_file(
-            self.trg_bucket, self.meta_key, self.meta_update_list
+            self.trg_bucket, self.meta_update_list, self.meta_key
         )
 
-        self._logger.info("Finished updating meta file.")
-        return is_successful
+        self._logger.info("Finished updating the meta file.")
+        return True
 
     def report(self):
         """Processes Xetra source data through ETL into a report.
