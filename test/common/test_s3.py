@@ -196,12 +196,10 @@ class TestS3BucketConnectorMethods(unittest.TestCase):
             ],
             columns=['col1', 'col2']
         )
-        log_exp = [
-            (f"Preparing to write {self.s3_endpoint_url}"
-            f"/{self.s3_bucket_name}/{key_exp} ..."),
-            (f"Finished writing {self.s3_endpoint_url}"
-            f"/{self.s3_bucket_name}/{key_exp}.")
-        ]
+        log_exp = (
+            f"Preparing to write {self.s3_endpoint_url}"
+            f"/{self.s3_bucket_name}/{key_exp} ..."
+        )
 
         # Method execution
         with self.assertLogs() as log:
@@ -210,8 +208,7 @@ class TestS3BucketConnectorMethods(unittest.TestCase):
             )
 
         # Test log after method execution
-        self.assertIn(log_exp[0], log.output[0])
-        self.assertIn(log_exp[1], log.output[1])
+        self.assertIn(log_exp, log.output[0])
 
         # Test after method execution
         data = (
@@ -250,12 +247,10 @@ class TestS3BucketConnectorMethods(unittest.TestCase):
             ],
             columns=['col1', 'col2']
         )
-        log_exp = [
-            (f"Preparing to write {self.s3_endpoint_url}"
-            f"/{self.s3_bucket_name}/{key_exp} ..."),
-            (f"Finished writing {self.s3_endpoint_url}"
-            f"/{self.s3_bucket_name}/{key_exp}.")
-        ]
+        log_exp = (
+            f"Preparing to write {self.s3_endpoint_url}"
+            f"/{self.s3_bucket_name}/{key_exp} ..."
+        )
 
         # Method execution
         with self.assertLogs() as log:
@@ -264,8 +259,7 @@ class TestS3BucketConnectorMethods(unittest.TestCase):
             )
 
         # Test log after method execution
-        self.assertIn(log_exp[0], log.output[0])
-        self.assertIn(log_exp[1], log.output[1])
+        self.assertIn(log_exp, log.output[0])
 
         # Test after method execution
         data = (

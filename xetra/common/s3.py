@@ -159,6 +159,7 @@ class S3BucketConnector():
             format
         )
         raise WrongFormatException
+        return False
 
     def __put_obj__(self, out_buffer: StringIO or BytesIO, key: str):
         """Helper method for uploading objects to the S3 bucket.
@@ -187,6 +188,4 @@ class S3BucketConnector():
             )
             return False
 
-        self._logger.info("Finished writing %s/%s/%s.",
-            self.endpoint_url, self._name, key)
         return True
