@@ -140,7 +140,7 @@ class XetraETL():
         """Transforms the Xetra data into a form suitable for reporting.
         
         This method performs transformations on the extracted data,
-        and reshapes the dataframe to report on facts such as
+        and reshapes the dataframe to report on the following:
         opening price, closing price, min and max price, daily trade volume,
         and percentage of change since last closing.
 
@@ -191,7 +191,7 @@ class XetraETL():
             .transform('last')
         )
 
-        # Rename date, min_price, max_price, and traded_volume columns
+        # Rename columns
         data_frame.rename(columns={
             self.src_args.src_col_isin: self.trg_args.trg_col_isin,
             self.src_args.src_col_date: self.trg_args.trg_col_date,
@@ -217,7 +217,7 @@ class XetraETL():
 
         # The prev_closing_price column is created
         # by sorting the data by Date, and then grouping it by ISIN
-        # and selecting for closing price of the previous date
+        # and selecting for opening price of the previous date
         data_frame[self.trg_args.trg_col_ch_prev_clos] = (
             data_frame.sort_values(by=[self.trg_args.trg_col_date])
             .groupby([self.trg_args.trg_col_isin])
@@ -226,7 +226,7 @@ class XetraETL():
 
         # Calculate the percentage of change in the closing price since the last date
         data_frame[self.trg_args.trg_col_ch_prev_clos] = (
-            (data_frame[self.trg_args.trg_col_clos_price] -
+            (data_frame[self.trg_args.trg_col_op_price] -
                 data_frame[self.trg_args.trg_col_ch_prev_clos]
             ) / data_frame[self.trg_args.trg_col_ch_prev_clos] * 100
         )
@@ -236,10 +236,11 @@ class XetraETL():
 
         # Filter the dataframe by date
         data_frame = data_frame[
-            data_frame[self.trg_args.trg_col_date] >= self.extract_date
+            data_frame.date >= self.extract_date
         ].reset_index(drop=True)
 
         self._logger.info("Finished transforming the Xetra data.")
+
         return data_frame
 
     def load(self, data_frame: DataFrame):

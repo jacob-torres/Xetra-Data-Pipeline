@@ -158,7 +158,7 @@ class TestXetraETLMethods(unittest.TestCase):
         )
 
         columns_report = [
-            'ISIN', 'date', 'opening_price_eur', 'closing_price_eur',
+            'isin', 'date', 'opening_price_eur', 'closing_price_eur',
             'minimum_price_eur', 'maximum_price_eur', 'daily_traded_volume', 'change_prev_closing_%'
         ]
 
@@ -275,8 +275,8 @@ class TestXetraETLMethods(unittest.TestCase):
                 self.s3_bucket_src, self.s3_bucket_trg, self.meta_key,
                 self.source_config, self.target_config
             )
-            #xetra_etl.extract_date = extract_date
-            #xetra_etl.extract_date_list = extract_date_list
+            xetra_etl.extract_date = extract_date
+            xetra_etl.extract_date_list = extract_date_list
 
             with self.assertLogs() as log:
                 df_result = xetra_etl.transform(df_input)
@@ -378,6 +378,7 @@ class TestXetraETLMethods(unittest.TestCase):
             )
             xetra_etl.extract_date = extract_date
             xetra_etl.extract_date_list = extract_date_list
+            xetra_etl.meta_update_list = meta_exp
             xetra_etl.report()
 
         # Test after method execution
