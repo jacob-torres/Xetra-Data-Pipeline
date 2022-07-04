@@ -1,12 +1,12 @@
 ---
 layout: page
-title: About Jacob
+title: About Jake
 subtitle:
 ---
 
 ## BACKGROUND
 
-I'm a Python engineer residing on the outskirts of beautiful Denver, Colorado. I'm interested in statistics and machine learning, Languages, geopolitics, and travel.
+I'm a software and data engineer residing on the outskirts of beautiful Denver, Colorado. I'm interested in statistics and machine learning, Languages, geopolitics, and travel.
 
 I'm legally blind, and I've had a severe [eye condition](https://en.wikipedia.org/wiki/Retinitis_pigmentosa#:~:text=Retinitis%20pigmentosa%20(RP)%20is%20a,Complete%20blindness%20is%20uncommon)
  since birth. Starting around age 5, I began learning to read/write braille and travel independently with a cane.
@@ -28,6 +28,6 @@ During my roughly 5 years of software and data science training, I have worked o
 
 ## CAREER
 
-In addition to several challenging personal projects, I was a data and machine learning engineer on [Scribble Stadium Arcade](https://medium.com/geekculture/scribble-stadium-bridging-the-analog-and-digital-39865975a954) until March 2022. I migrated nearly 1 GB of training image data from the GitHub repo to the cloud, and helped improve upon a Tesseract OCR model for hand-writing recognition.
+In addition to several challenging personal projects like the [Xetra ETL Data Pipeline](https://github.com/jacob-torres/xetra-data-pipeline/), I was a data and machine learning engineer on [Scribble Stadium Arcade](https://medium.com/geekculture/scribble-stadium-bridging-the-analog-and-digital-39865975a954) until March 2022. I migrated nearly 1 GB of training image data from the GitHub repo to the cloud, and helped improve upon a Tesseract OCR model for hand-writing recognition.
 
-I am now involved in the [Unlock Africa Project](https://mbuyu.org/), building and fine-tuning a Google Vision OCR model for the translation of thousands of national documents into four languages.
+I am now involved in the [Bestimate](https://nu-bestimate.web.app/) app, building and optimizing our data analytics infrastructure from the ground up! The goal is to help companies harness the power of business intelligence to boost their growth.
