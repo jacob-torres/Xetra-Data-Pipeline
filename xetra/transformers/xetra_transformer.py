@@ -46,7 +46,7 @@ class XetraTargetConfig(NamedTuple):
     trg_col_max_price: column name for maximum price in target
     trg_col_dail_trad_vol: column name for daily traded volume in target
     trg_col_ch_prev_clos: column name for change in prev closing price
-    trg_key: basic key of target file
+    trg_key: basic key prefix of target file
     trg_key_date_format: date format of target file key
     trg_format: file format of the target file
     """
@@ -257,14 +257,14 @@ class XetraETL():
         """
 
         key_date = (
-            datetime.today().strftime(self.trg_args.trg_key_date_format)
+            datetime.today().date()
+            .strftime(self.trg_args.trg_key_date_format)
         )
 
-        # Formatted object key
+        # Format object key
         target_key = (
-            f"{self.trg_args.trg_key}"
-            f"_{key_date}_"
-            f"{self.trg_args.trg_format}"
+            self.trg_args.trg_key +
+            f"_{key_date}." + self.trg_args.trg_format
         )
 
         new_object = self.trg_bucket.write_df_to_s3(
@@ -286,6 +286,7 @@ class XetraETL():
 
         self._logger.info("Finished updating the meta file.")
         return True
+
 
     def report(self):
         """Processes Xetra source data through ETL into a report.
