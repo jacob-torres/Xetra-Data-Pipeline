@@ -1,6 +1,7 @@
 """Integration Test XetraETLMethods"""
 import os
 import unittest
+import warnings
 from io import BytesIO
 from datetime import datetime, timedelta
 
@@ -10,6 +11,7 @@ import pandas as pd
 from xetra.common.s3 import S3BucketConnector
 from xetra.common.constants import MetaProcessFormat
 from xetra.transformers.xetra_transformer import XetraETL, XetraSourceConfig, XetraTargetConfig
+
 
 class IntTestXetraETLMethods(unittest.TestCase):
     """
@@ -77,10 +79,12 @@ class IntTestXetraETLMethods(unittest.TestCase):
             'trg_col_max_price': 'maximum_price_eur',
             'trg_col_dail_trad_vol': 'daily_traded_volume',
             'trg_col_ch_prev_clos': 'change_prev_closing_%',
-            'trg_key': 'report1/xetra_daily_report1_',
-            'trg_key_date_format': '%Y%m%d_%H%M%S',
+            'trg_key': 'report/xetra_daily_report_',
+            'trg_key_date_format': '%Y%m%d',
             'trg_format': 'parquet'
         }
+
+        # Create source and target configs
         self.source_config = XetraSourceConfig(**conf_dict_src)
         self.target_config = XetraTargetConfig(**conf_dict_trg)
 
@@ -163,6 +167,9 @@ class IntTestXetraETLMethods(unittest.TestCase):
         with no existing meta file.
         """
 
+        # Supress ResourceWarning
+        warnings.simplefilter('ignore', ResourceWarning)
+
         # Expected results
         df_exp = self.df_report
         meta_exp = [self.dates[3], self.dates[2], self.dates[1], self.dates[0]]
@@ -172,21 +179,37 @@ class IntTestXetraETLMethods(unittest.TestCase):
                              self.meta_key, self.source_config, self.target_config)
         xetra_etl.report()
 
-        # Test after method execution
-        trg_file = self.s3_bucket_trg.list_files_by_prefix(
-            self.target_config.trg_key)[0]
-        data = (
-            self.trg_bucket.Object(key=trg_file)
-            .get().get('Body').read()
+        # Format target key and date
+        key_date = (
+            datetime.today().date()
+            .strftime(self.target_config.trg_key_date_format)
         )
-        out_buffer = BytesIO(data)
-        df_result = pd.read_parquet(out_buffer)
-        self.assertTrue(df_exp.equals(df_result))
+        target_key = (
+            self.target_config.trg_key +
+            f"_{key_date}." + self.target_config.trg_format
+        )
 
-        meta_file = self.s3_bucket_trg.list_files_by_prefix(
-            self.meta_key)[0]
-        df_meta_result = self.s3_bucket_trg.read_csv_to_df(meta_file)
-        self.assertEqual(list(df_meta_result['source_date']), meta_exp)
+        # Test after method execution
+        files = self.s3_bucket_trg.list_files_by_prefix(target_key)
+
+        if files:
+            trg_file = files[0]
+            data = (
+                self.trg_bucket.Object(key=trg_file)
+                .get().get('Body').read()
+            )
+            out_buffer = BytesIO(data)
+            df_result = pd.read_parquet(out_buffer)
+            self.assertTrue(df_exp.equals(df_result))
+
+            meta_file = self.s3_bucket_trg.list_files_by_prefix(
+                self.meta_key)[0]
+            df_meta_result = self.s3_bucket_trg.read_csv_to_df(meta_file)
+            self.assertEqual(list(df_meta_result['source_date']), meta_exp)
+
+        else:
+            print(f"No files with the key {target_key}")
+            return False
 
 
 if __name__ == '__main__':
