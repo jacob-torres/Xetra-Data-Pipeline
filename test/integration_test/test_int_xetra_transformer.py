@@ -180,10 +180,7 @@ class IntTestXetraETLMethods(unittest.TestCase):
         xetra_etl.report()
 
         # Format target key and date
-        key_date = (
-            datetime.today().date()
-            .strftime(self.target_config.trg_key_date_format)
-        )
+        key_date = self.dates[0]
         target_key = (
             self.target_config.trg_key +
             f"_{key_date}." + self.target_config.trg_format
