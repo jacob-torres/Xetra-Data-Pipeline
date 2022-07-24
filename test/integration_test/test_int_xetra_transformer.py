@@ -24,9 +24,9 @@ class IntTestXetraETLMethods(unittest.TestCase):
         # Define the class arguments
         self.s3_access_key = os.environ['AWS_ACCESS_KEY_ID']
         self.s3_secret_key = os.environ['AWS_SECRET_ACCESS_KEY']
-        self.s3_endpoint_url = 'https://s3.us-west-2.amazonaws.com'
-        self.s3_bucket_name_src = 'xetra-int-test-src-jt'
-        self.s3_bucket_name_trg = 'xetra-int-test-trg-jt'
+        self.s3_endpoint_url = 'https://s3.us-west-1.amazonaws.com'
+        self.s3_bucket_name_src = 'xetra-etl-test-int-src'
+        self.s3_bucket_name_trg = 'xetra-etl-test-int-trg'
         self.meta_key = 'meta.csv'
 
         # Create source and target buckets
