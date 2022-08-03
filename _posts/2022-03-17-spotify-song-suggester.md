@@ -2,11 +2,11 @@
 layout: post
 title: Spotify Song Suggester
 subtitle: Using a Nearest Neighbors Model to Suggest the Best Music for Anyone
-author: Jacob Torres
+author: Jake Torres
 gh-repo: jacob-torres/spotify-song-suggester/blob/main/airbnb_ds_u2.ipynb
 gh-badge: [follow]
 tags: [data-science, data-analysis, machine-learning, spotify, music, recommendations, nearest-neighbors, predictive-modeling, jupyter-notebook]
-comments: true
+comments: false
 ---
 
 [Spotify](https://spotify.com/) is one of the most popular music streaming services in the world. For one of my most interesting projects yet, I was tasked with writing and training a machine learning model to suggest songs to a Spotify user based on their liked songs.

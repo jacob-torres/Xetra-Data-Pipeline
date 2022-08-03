@@ -1,15 +1,15 @@
 ---
 layout: post
-title: Traveling in the 21st Century
-subtitle: Predicting the Price of an Airbnb with Math and Python
-author: Jacob Torres
+title: Airbnb Price Optimizer
+subtitle: Entering the 21st-Century Travel Market with Math and Python
+author: Jake Torres
 gh-repo: jacob-torres/airbnb-optimal-price/blob/main/
 gh-badge: [follow]
 tags: [data-science, data-analysis, travel, airbnb, housing, housing-price, machine-learning, predictive-modeling]
-comments: true
+comments: false
 ---
 
-When traveling around the United States, an increasing number of people are looking to the popular service [Airbnb](https://airbnb.com/) as an alternative to more traditional options like hotels. There are several main reasons for this trend, including the flexibility of location, housing type, and affordability. It's important for a person interested in listing their home for rent on Airbnb to understand what determines a fair price.
+When traveling around the United States, an increasing number of people are looking to the popular service [Airbnb](https://airbnb.com/) as an alternative to more traditional options like hotels. There are several main reasons for this trend, including the flexibility of location, housing type, and affordability. It's important for a person interested in listing their home for rent on Airbnb to understand what determines a fair price, so they can enter this booming market with full confidence.
 
 The following dataset was found on [Kaggle's database,](https://kaggle.com/datasets/) and comprises nearly a quarter of a million Airbnb listings around the United States in 2020.
 
